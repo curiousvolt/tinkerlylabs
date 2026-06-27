@@ -148,6 +148,7 @@ export default function FAQ() {
                           opacity: { duration: 0.15 }
                         }
                       }}
+                      className="overflow-hidden"
                     >
                       <div className="px-6 pb-6 pt-0 ml-9 border-t border-zinc-100">
                         <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl">
