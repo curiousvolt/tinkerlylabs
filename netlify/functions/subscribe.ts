@@ -11,11 +11,12 @@ export const handler: Handler = async (event) => {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  let email: string, source: string;
+  let email: string, source: string, newsletter: boolean;
   try {
     const body = JSON.parse(event.body || "{}");
     email = body.email;
     source = body.source || "unknown";
+    newsletter = body.newsletter !== false; // default true
   } catch {
     return { statusCode: 400, body: JSON.stringify({ error: "Invalid JSON" }) };
   }
@@ -44,9 +45,9 @@ export const handler: Handler = async (event) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:C",
+      range: "Sheet1!A:D",
       valueInputOption: "USER_ENTERED",
-      requestBody: { values: [[email, timestamp, source]] },
+      requestBody: { values: [[email, timestamp, source, newsletter ? "Newsletter: Yes" : "Newsletter: No"]] },
     });
 
     return {

@@ -9,31 +9,28 @@ interface JoinPopupProps {
 
 export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
   const [email, setEmail] = useState("");
+  const [newsletter, setNewsletter] = useState(true); // opt-in checked by default
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input on open
+  // Reset & focus on open
   useEffect(() => {
     if (isOpen) {
       setIsSubmitted(false);
       setEmail("");
+      setNewsletter(true);
       setError("");
-      // Add a slight timeout to let the entrance animation start before focusing
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 150);
+      const timer = setTimeout(() => { inputRef.current?.focus(); }, 150);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
-  // Handle ESC key close
+  // ESC to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
+      if (e.key === "Escape" && isOpen) onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -52,11 +49,11 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'popup' }),
+        body: JSON.stringify({ email, source: 'popup', newsletter }),
       });
       if (!res.ok) throw new Error('Failed');
       setIsSubmitted(true);
-      setTimeout(() => { onClose(); }, 2500);
+      setTimeout(() => { onClose(); }, 2800);
     } catch {
       setError('SOMETHING WENT WRONG. TRY AGAIN.');
     } finally {
@@ -68,7 +65,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          {/* Backdrop Overlay */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -77,30 +74,30 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
             className="absolute inset-0 bg-zinc-900/40 backdrop-blur-md cursor-pointer"
           />
 
-          {/* Modal Container */}
+          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1, 
+            animate={{
+              opacity: 1,
+              scale: 1,
               y: 0,
-              transition: { type: "spring", damping: 25, stiffness: 350 }
+              transition: { type: "spring", damping: 25, stiffness: 350 },
             }}
             exit={{ opacity: 0, scale: 0.95, y: 15, transition: { duration: 0.2 } }}
             className="relative w-full max-w-md bg-white/95 border border-[#96A88F]/25 rounded-[2.5rem] p-9 sm:p-10 shadow-[0_20px_50px_rgba(150,168,143,0.15)] overflow-hidden z-10"
             style={{
               backgroundImage: `
-                linear-gradient(rgba(150, 168, 143, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(150, 168, 143, 0.05) 1px, transparent 1px)
+                linear-gradient(rgba(150,168,143,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(150,168,143,0.05) 1px, transparent 1px)
               `,
-              backgroundSize: '16px 16px',
+              backgroundSize: "16px 16px",
             }}
           >
-            {/* Soft background light */}
+            {/* Soft glows */}
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-[#96A88F]/10 rounded-full blur-[60px] pointer-events-none" />
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-[#E39B4B]/8 rounded-full blur-[60px] pointer-events-none" />
 
-            {/* Close Button */}
+            {/* Close */}
             <button
               onClick={onClose}
               className="absolute top-6 right-6 w-8 h-8 rounded-full border border-zinc-100 bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-800 transition-all duration-300 cursor-pointer outline-none focus:outline-none"
@@ -109,7 +106,6 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
               <X className="w-4 h-4" />
             </button>
 
-            {/* Form Content */}
             <AnimatePresence mode="wait">
               {!isSubmitted ? (
                 <motion.div
@@ -138,22 +134,46 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+                    {/* Email field */}
                     <div className="relative">
-                      <Mail className="absolute left-4.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                       <input
                         ref={inputRef}
                         type="email"
                         value={email}
-                        onChange={(e) => {
-                          setEmail(e.target.value);
-                          if (error) setError("");
-                        }}
+                        onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
                         placeholder="NAME@EMAIL.COM"
                         className="w-full bg-[#F4F6F2]/60 hover:bg-[#F4F6F2]/85 focus:bg-white border border-[#96A88F]/30 focus:border-[#E39B4B]/60 rounded-full pl-12 pr-6 py-4 text-xs text-zinc-800 placeholder-zinc-400 outline-none uppercase tracking-widest font-mono transition-all duration-300"
                       />
                     </div>
 
-                    {/* Error message */}
+                    {/* Newsletter checkbox */}
+                    <label className="flex items-start gap-3 cursor-pointer group text-left px-1">
+                      <div className="relative mt-0.5 shrink-0">
+                        <input
+                          type="checkbox"
+                          id="newsletter-opt-in"
+                          checked={newsletter}
+                          onChange={(e) => setNewsletter(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        {/* Custom checkbox */}
+                        <div className="w-4 h-4 rounded border border-[#96A88F]/40 bg-white peer-checked:bg-[#414C93] peer-checked:border-[#414C93] transition-all duration-200 flex items-center justify-center">
+                          {newsletter && (
+                            <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 12 12" fill="none">
+                              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-sans text-zinc-500 group-hover:text-zinc-700 leading-relaxed transition-colors duration-200">
+                        Also subscribe me to the{" "}
+                        <span className="text-[#414C93] font-semibold">monthly newsletter</span>
+                        {" "}— handpicked reads on AI, creativity & building things that matter.
+                      </span>
+                    </label>
+
+                    {/* Error */}
                     <AnimatePresence>
                       {error && (
                         <motion.span
@@ -167,11 +187,11 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                       )}
                     </AnimatePresence>
 
-                    {/* Submit Button */}
+                    {/* Submit */}
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="group relative inline-flex items-center justify-center gap-1.5 overflow-hidden w-full py-4 rounded-full font-sans font-semibold text-xs uppercase tracking-wider bg-[#F4F6FB]/80 hover:bg-white backdrop-blur-md border border-[#414C93]/15 text-[#414C93] shadow-sm hover:shadow-[0_4px_15px_rgba(65,76,147,0.15)] transition-all duration-300 active:scale-98 cursor-pointer outline-none focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="group relative inline-flex items-center justify-center gap-1.5 overflow-hidden w-full py-4 rounded-full font-sans font-semibold text-xs uppercase tracking-wider bg-[#F4F6FB]/80 hover:bg-white backdrop-blur-md border border-[#414C93]/15 text-[#414C93] shadow-sm hover:shadow-[0_4px_15px_rgba(65,76,147,0.15)] transition-all duration-300 active:scale-[0.98] cursor-pointer outline-none focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {isLoading ? (
                         <span className="relative z-10 flex items-center gap-2">
@@ -180,15 +200,15 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                         </span>
                       ) : (
                         <>
-                          <span className="relative z-10">Submit</span>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-[#414C93] group-hover:translate-x-0.5 transition-transform duration-300"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                          <span className="relative z-10">Join the Waitlist</span>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-[#414C93] group-hover:translate-x-0.5 transition-transform duration-300"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                         </>
                       )}
                     </button>
                   </form>
 
                   {/* Privacy note */}
-                  <span className="text-[9px] font-mono text-zinc-400 tracking-wider uppercase mt-6">
+                  <span className="text-[9px] font-mono text-zinc-400 tracking-wider uppercase mt-5">
                     Zero spam. Only signal.
                   </span>
                 </motion.div>
@@ -214,10 +234,15 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                   </h3>
 
                   <p className="text-xs sm:text-sm text-zinc-600 max-w-xs leading-relaxed font-sans mb-2">
-                    Thank you! We've added <span className="text-[#E39B4B] font-mono text-xs">{email.toLowerCase()}</span> to the exclusive waitlist.
+                    We've added <span className="text-[#E39B4B] font-mono text-xs">{email.toLowerCase()}</span> to the waitlist.
+                    {newsletter && (
+                      <span className="block mt-1 text-[#96A88F]">
+                        📬 You'll also get our monthly reads.
+                      </span>
+                    )}
                   </p>
-                  
-                  <p className="text-[10px] font-mono tracking-widest text-[#96A88F] uppercase">
+
+                  <p className="text-[10px] font-mono tracking-widest text-[#96A88F] uppercase mt-2">
                     TINKERLY COHORT LAUNCHES SOON
                   </p>
                 </motion.div>
