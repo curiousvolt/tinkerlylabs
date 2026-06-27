@@ -45,9 +45,9 @@ export const handler: Handler = async (event) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:D",
+      range: "Sheet1!A:C",
       valueInputOption: "USER_ENTERED",
-      requestBody: { values: [[email, timestamp, source, newsletter ? "Newsletter: Yes" : "Newsletter: No"]] },
+      requestBody: { values: [[email, timestamp, source, newsletter ? "Yes" : "No"]] },
     });
 
     return {

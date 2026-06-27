@@ -9,13 +9,13 @@ interface JoinPopupProps {
 
 export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
   const [email, setEmail] = useState("");
-  const [newsletter, setNewsletter] = useState(true); // opt-in checked by default
+  const [newsletter, setNewsletter] = useState(true); // opted-in by default
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Reset & focus on open
+  // Focus input on open
   useEffect(() => {
     if (isOpen) {
       setIsSubmitted(false);
@@ -27,7 +27,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
     }
   }, [isOpen]);
 
-  // ESC to close
+  // ESC key close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) onClose();
@@ -39,10 +39,8 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (!email) { setError("PLEASE ENTER YOUR EMAIL"); return; }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) { setError("INVALID EMAIL FORMAT"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("INVALID EMAIL FORMAT"); return; }
 
     setIsLoading(true);
     try {
@@ -77,20 +75,15 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              transition: { type: "spring", damping: 25, stiffness: 350 },
-            }}
+            animate={{ opacity: 1, scale: 1, y: 0, transition: { type: "spring", damping: 25, stiffness: 350 } }}
             exit={{ opacity: 0, scale: 0.95, y: 15, transition: { duration: 0.2 } }}
             className="relative w-full max-w-md bg-white/95 border border-[#96A88F]/25 rounded-[2.5rem] p-9 sm:p-10 shadow-[0_20px_50px_rgba(150,168,143,0.15)] overflow-hidden z-10"
             style={{
               backgroundImage: `
-                linear-gradient(rgba(150,168,143,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(150,168,143,0.05) 1px, transparent 1px)
+                linear-gradient(rgba(150, 168, 143, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(150, 168, 143, 0.05) 1px, transparent 1px)
               `,
-              backgroundSize: "16px 16px",
+              backgroundSize: '16px 16px',
             }}
           >
             {/* Soft glows */}
@@ -101,7 +94,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
             <button
               onClick={onClose}
               className="absolute top-6 right-6 w-8 h-8 rounded-full border border-zinc-100 bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-800 transition-all duration-300 cursor-pointer outline-none focus:outline-none"
-              aria-label="Close form"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
@@ -122,19 +115,16 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                     Waitlist Access
                   </span>
 
-                  {/* Title */}
                   <h3 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-[#131911] mb-3">
                     Unlock the Operating System
                   </h3>
 
-                  {/* Description */}
                   <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mb-8 leading-relaxed font-sans">
                     Join the exclusive builder waitlist. Be the first to secure early-bird access and receive custom cohort resources.
                   </p>
 
-                  {/* Form */}
                   <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
-                    {/* Email field */}
+                    {/* Email input */}
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                       <input
@@ -143,7 +133,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                         value={email}
                         onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
                         placeholder="NAME@EMAIL.COM"
-                        className="w-full bg-[#F4F6F2]/60 hover:bg-[#F4F6F2]/85 focus:bg-white border border-[#96A88F]/30 focus:border-[#E39B4B]/60 rounded-full pl-12 pr-6 py-4 text-xs text-zinc-800 placeholder-zinc-400 outline-none uppercase tracking-widest font-mono transition-all duration-300"
+                        className="w-full bg-[#F4F6F2]/60 hover:bg-[#F4F6F2]/85 focus:bg-white border border-[#96A88F]/30 focus:border-[#E39B4B]/60 rounded-full pl-11 pr-6 py-4 text-xs text-zinc-800 placeholder-zinc-400 outline-none uppercase tracking-widest font-mono transition-all duration-300"
                       />
                     </div>
 
@@ -158,18 +148,16 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                           className="sr-only peer"
                         />
                         {/* Custom checkbox */}
-                        <div className="w-4 h-4 rounded border border-[#96A88F]/40 bg-white peer-checked:bg-[#414C93] peer-checked:border-[#414C93] transition-all duration-200 flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-[4px] border border-[#96A88F]/40 bg-white peer-checked:bg-[#414C93] peer-checked:border-[#414C93] transition-all duration-200 flex items-center justify-center">
                           {newsletter && (
-                            <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 12 12" fill="none">
-                              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <svg viewBox="0 0 10 8" className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M1 4l2.5 2.5L9 1" />
                             </svg>
                           )}
                         </div>
                       </div>
-                      <span className="text-[10px] font-sans text-zinc-500 group-hover:text-zinc-700 leading-relaxed transition-colors duration-200">
-                        Also subscribe me to the{" "}
-                        <span className="text-[#414C93] font-semibold">monthly newsletter</span>
-                        {" "}— handpicked reads on AI, creativity & building things that matter.
+                      <span className="text-[11px] font-sans text-zinc-500 leading-relaxed group-hover:text-zinc-700 transition-colors duration-200">
+                        Also send me <span className="font-semibold text-zinc-700">monthly reads</span> — curated articles & ideas on AI, creativity and building. No spam, unsubscribe anytime.
                       </span>
                     </label>
 
@@ -180,7 +168,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="text-[9px] font-mono tracking-wider text-red-500 uppercase text-left pl-2"
+                          className="overflow-hidden text-[9px] font-mono tracking-wider text-red-500 uppercase text-left pl-2"
                         >
                           {error}
                         </motion.span>
@@ -207,7 +195,6 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                     </button>
                   </form>
 
-                  {/* Privacy note */}
                   <span className="text-[9px] font-mono text-zinc-400 tracking-wider uppercase mt-5">
                     Zero spam. Only signal.
                   </span>
@@ -236,9 +223,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                   <p className="text-xs sm:text-sm text-zinc-600 max-w-xs leading-relaxed font-sans mb-2">
                     We've added <span className="text-[#E39B4B] font-mono text-xs">{email.toLowerCase()}</span> to the waitlist.
                     {newsletter && (
-                      <span className="block mt-1 text-[#96A88F]">
-                        📬 You'll also get our monthly reads.
-                      </span>
+                      <span className="block mt-1 text-[#96A88F]">Monthly reads are on their way too. 📖</span>
                     )}
                   </p>
 
