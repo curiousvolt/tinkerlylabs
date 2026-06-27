@@ -108,7 +108,7 @@ export default function App() {
           {/* Navigation links (Middle) */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center">
             <a
-              href="https://tinkerlylabs.com"
+              href="https://www.curiousvolt.is-a.dev/blog"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-sans font-medium text-zinc-600 hover:text-[#131911] transition-colors duration-200"
@@ -414,7 +414,7 @@ export default function App() {
 
             {/* YouTube */}
             <a
-              href="https://youtube.com/@tinkerlylabs"
+              href="https://www.youtube.com/@TinkerlyLabs"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative w-10 h-10 flex items-center justify-center transition-all duration-300"
@@ -461,7 +461,7 @@ export default function App() {
 
             {/* Instagram */}
             <a
-              href="https://instagram.com/tinkerlylabs"
+              href="https://www.instagram.com/tinkerlylabs/"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative w-10 h-10 flex items-center justify-center transition-all duration-300"
