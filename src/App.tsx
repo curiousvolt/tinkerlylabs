@@ -1,5 +1,5 @@
-import React, { useState, lazy, Suspense } from "react";
-import { motion, useScroll, useMotionValueEvent } from "motion/react";
+import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
+import { motion } from "motion/react";
 import CustomCursor from "./components/CustomCursor";
 
 // Lazy-load all heavy sections — they load as the user scrolls
@@ -16,8 +16,7 @@ const JoinPopup            = lazy(() => import("./components/JoinPopup"));
 const SectionFallback = () => <div className="w-full h-32" />;
 
 export default function App() {
-  const { scrollY } = useScroll();
-  const [navVisible, setNavVisible] = useState(true);
+  const navRef = useRef<HTMLElement>(null);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,19 +44,27 @@ export default function App() {
     }
   };
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious();
-    if (previous === undefined) return;
+  // Navbar hide/show — direct DOM manipulation, zero React re-renders on scroll
+  useEffect(() => {
+    let lastY = 0;
+    const TRANSITION = 'transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+    const el = navRef.current;
+    if (!el) return;
+    el.style.transition = TRANSITION;
 
-    // Slide up (hide) only when scrolling down past 80px
-    if (latest > previous && latest > 80) {
-      setNavVisible(false);
-    }
-    // Slide down (show) when scrolling up by at least 5px, or near the top
-    else if (latest < previous - 5 || latest < 20) {
-      setNavVisible(true);
-    }
-  });
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y > lastY && y > 80) {
+        el.style.transform = 'translateY(-120px)';
+      } else if (y < lastY - 5 || y < 20) {
+        el.style.transform = 'translateY(0)';
+      }
+      lastY = y;
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleScrollToSection = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -75,22 +82,17 @@ export default function App() {
       {/* 1. Custom Trailing Liquid Glowing Cursor */}
       <CustomCursor />
 
-      {/* Decorative backing radial light bursts - compositor-promoted layers */}
-      <div className="absolute top-[3%] left-[10%] w-[500px] h-[500px] bg-[#3F513B]/10 rounded-full blur-[150px] pointer-events-none z-0" style={{ willChange: 'transform' }} />
-      <div className="absolute top-[20%] right-[5%] w-[600px] h-[600px] bg-[#E39B4B]/5 rounded-full blur-[160px] pointer-events-none z-0" style={{ willChange: 'transform' }} />
-      <div className="absolute bottom-[35%] left-[3%] w-[550px] h-[550px] bg-[#D07C5B]/8 rounded-full blur-[150px] pointer-events-none z-0" style={{ willChange: 'transform' }} />
-      <div className="absolute bottom-[8%] right-[10%] w-[450px] h-[450px] bg-[#3F513B]/10 rounded-full blur-[130px] pointer-events-none z-0" style={{ willChange: 'transform' }} />
+      {/* Decorative backing radial light bursts */}
+      <div className="absolute top-[3%] left-[10%] w-[500px] h-[500px] bg-[#3F513B]/10 rounded-full blur-[150px] pointer-events-none z-0" />
+      <div className="absolute top-[20%] right-[5%] w-[600px] h-[600px] bg-[#E39B4B]/5 rounded-full blur-[160px] pointer-events-none z-0" />
+      <div className="absolute bottom-[35%] left-[3%] w-[550px] h-[550px] bg-[#D07C5B]/8 rounded-full blur-[150px] pointer-events-none z-0" />
+      <div className="absolute bottom-[8%] right-[10%] w-[450px] h-[450px] bg-[#3F513B]/10 rounded-full blur-[130px] pointer-events-none z-0" />
 
-      {/* 2. Sticky Floating Centered Navbar */}
-      <motion.header
-        variants={{
-          visible: { y: 0 },
-          hidden: { y: -120 },
-        }}
-        initial="visible"
-        animate={navVisible ? "visible" : "hidden"}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      {/* 2. Sticky Floating Centered Navbar — ref-driven, no React re-renders on scroll */}
+      <header
+        ref={navRef}
         className="fixed top-6 left-0 right-0 z-50 px-4 pointer-events-none"
+        style={{ willChange: 'transform' }}
       >
         <nav className="max-w-3xl w-full mx-auto flex items-center justify-between relative bg-white/30 backdrop-blur-md backdrop-saturate-150 border border-white/40 py-2 pl-4 pr-2 md:pl-6 md:pr-3 rounded-full pointer-events-auto shadow-2xl">
           {/* Logo Brand Title (Left) */}
@@ -143,7 +145,7 @@ export default function App() {
             </button>
           </div>
         </nav>
-      </motion.header>
+      </header>
 
       {/* HERO SECTION */}
       <section
