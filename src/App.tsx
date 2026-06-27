@@ -316,7 +316,6 @@ export default function App() {
             </a>
           </motion.div>
 
-
         </div>
       </section>
 
@@ -373,7 +372,7 @@ export default function App() {
           <div className="flex items-center gap-6 justify-center">
             {/* Twitter/X */}
             <a
-              href="https://twitter.com"
+              href="https://x.com/tinkerlylabs"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative w-10 h-10 flex items-center justify-center transition-all duration-300"
@@ -415,7 +414,7 @@ export default function App() {
 
             {/* YouTube */}
             <a
-              href="https://youtube.com"
+              href="https://youtube.com/@tinkerlylabs"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative w-10 h-10 flex items-center justify-center transition-all duration-300"
@@ -462,7 +461,7 @@ export default function App() {
 
             {/* Instagram */}
             <a
-              href="https://instagram.com"
+              href="https://instagram.com/tinkerlylabs"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative w-10 h-10 flex items-center justify-center transition-all duration-300"
