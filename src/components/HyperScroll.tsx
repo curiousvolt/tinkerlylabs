@@ -618,8 +618,7 @@ export default function HyperScroll() {
           {/* GLASS HERO CLIMAX TYPOGRAPHY DISPLAY */}
           <div 
             id="completion-text-container"
-            className="absolute inset-0 z-[10] flex flex-col items-center justify-center text-center px-4 md:px-12 pill-glass"
-            style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}
+            className="absolute inset-0 z-[10] flex flex-col items-center justify-center text-center px-4 md:px-12 bg-white/20 backdrop-blur-md backdrop-saturate-150"
           >
             <div id="completion-text-content" className="flex flex-col items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]">
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#96A88F]/10 border border-[#96A88F]/20 text-[9px] font-mono font-bold tracking-[0.2em] text-[#556350] uppercase mb-8">

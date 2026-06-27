@@ -92,7 +92,7 @@ export default function App() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="fixed top-6 left-0 right-0 z-50 px-4 pointer-events-none"
       >
-        <nav className="max-w-3xl w-full mx-auto flex items-center justify-between relative liquid-glass py-2 pl-4 pr-2 md:pl-6 md:pr-3 rounded-full pointer-events-auto shadow-2xl">
+        <nav className="max-w-3xl w-full mx-auto flex items-center justify-between relative bg-white/30 backdrop-blur-md backdrop-saturate-150 border border-white/40 py-2 pl-4 pr-2 md:pl-6 md:pr-3 rounded-full pointer-events-auto shadow-2xl">
           {/* Logo Brand Title (Left) */}
           <div
             className="flex items-center cursor-pointer px-2 py-1"

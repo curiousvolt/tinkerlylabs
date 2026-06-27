@@ -6,13 +6,13 @@ interface CTASectionProps {
 
 export default function CTASection({ onJoinClick }: CTASectionProps) {
   return (
-    <section className="relative w-full py-16 px-4 md:px-8 z-10 bg-[#F9FAF7]">
+    <section className="relative w-full py-12 px-4 md:px-6 z-10 bg-[#F9FAF7]">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-6xl mx-auto relative rounded-[3rem] overflow-hidden shadow-2xl py-24 md:py-32 px-6 flex flex-col items-center justify-center text-center"
+        className="max-w-4xl mx-auto relative rounded-[2.5rem] overflow-hidden shadow-2xl py-16 md:py-20 px-6 flex flex-col items-center justify-center text-center"
       >
         {/* Gradient background */}
         <div
