@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { Plus, HelpCircle } from "lucide-react";
 
 interface FAQItem {
@@ -55,7 +55,7 @@ export default function FAQ() {
       <div className="absolute bottom-[20%] right-[10%] w-[450px] h-[450px] bg-[#E39B4B]/5 rounded-full blur-[130px] pointer-events-none z-0" />
 
       <div className="max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center">
-        {/* Presenter Sub-Badge */}
+        {/* Sub-Badge */}
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -79,7 +79,7 @@ export default function FAQ() {
           </span>
         </motion.h2>
 
-        {/* Interactive Accordion List */}
+        {/* Accordion List — uses CSS grid rows for zero-jitter expand/collapse */}
         <div className="w-full max-w-3xl flex flex-col gap-4">
           {FAQ_DATA.map((item, idx) => {
             const isOpen = openIndex === idx;
@@ -90,21 +90,21 @@ export default function FAQ() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className={`group border border-[#96A88F]/15 rounded-2xl bg-white overflow-hidden transition-colors transition-shadow duration-300 ${
+                className={`group border rounded-2xl bg-white transition-[border-color,box-shadow] duration-300 ${
                   isOpen
-                    ? "border-[#E39B4B]/30 shadow-[0_4px_30px_rgba(150,168,143,0.06)]"
-                    : "hover:border-[#96A88F]/30"
+                    ? "border-[#E39B4B]/30 shadow-[0_4px_30px_rgba(150,168,143,0.08)]"
+                    : "border-[#96A88F]/15 hover:border-[#96A88F]/30"
                 }`}
               >
-                {/* Trigger Area */}
+                {/* Trigger */}
                 <button
                   onClick={() => toggleFAQ(idx)}
                   className="w-full flex items-center justify-between p-6 text-left cursor-pointer outline-none focus:outline-none"
                   aria-expanded={isOpen}
                 >
-                  <div className="flex items-center gap-4.5">
+                  <div className="flex items-center gap-4">
                     <HelpCircle
-                      className={`w-4.5 h-4.5 shrink-0 transition-colors duration-300 ${
+                      className={`w-4 h-4 shrink-0 transition-colors duration-300 ${
                         isOpen ? "text-[#E39B4B]" : "text-zinc-400 group-hover:text-zinc-600"
                       }`}
                     />
@@ -113,51 +113,40 @@ export default function FAQ() {
                     </span>
                   </div>
                   <div className="ml-4 shrink-0">
-                    <motion.div
-                      animate={{ rotate: isOpen ? 135 : 0 }}
-                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                      className={`w-7 h-7 rounded-full flex items-center justify-center border transition-colors duration-300 ${
+                    {/* CSS-only rotation — no Framer Motion on the icon to avoid re-render */}
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center border transition-all duration-300 ${
                         isOpen
-                          ? "bg-[#E39B4B]/10 border-[#E39B4B]/30 text-[#E39B4B]"
-                          : "border-[#96A88F]/20 text-zinc-500 group-hover:text-zinc-700 group-hover:border-[#96A88F]/40"
+                          ? "bg-[#E39B4B]/10 border-[#E39B4B]/30 text-[#E39B4B] rotate-45"
+                          : "border-[#96A88F]/20 text-zinc-500 group-hover:text-zinc-700 group-hover:border-[#96A88F]/40 rotate-0"
                       }`}
                     >
                       <Plus className="w-4 h-4" />
-                    </motion.div>
+                    </div>
                   </div>
                 </button>
 
-                {/* Expanding Content Area */}
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{
-                        height: "auto",
-                        opacity: 1,
-                        transition: {
-                          height: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
-                          opacity: { duration: 0.25, delay: 0.05 }
-                        }
-                      }}
-                      exit={{
-                        height: 0,
-                        opacity: 0,
-                        transition: {
-                          height: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-                          opacity: { duration: 0.15 }
-                        }
-                      }}
-                      className="overflow-hidden"
+                {/*
+                  CSS grid-template-rows accordion — the ONLY truly jitter-free technique.
+                  grid-template-rows: 0fr → 1fr is handled entirely by the compositor;
+                  no JS layout recalculation happens on each frame.
+                */}
+                <div
+                  className="grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+                >
+                  <div className="overflow-hidden">
+                    <div
+                      className={`px-6 pb-6 pt-0 ml-8 border-t border-zinc-100 transition-opacity duration-300 ${
+                        isOpen ? "opacity-100" : "opacity-0"
+                      }`}
                     >
-                      <div className="px-6 pb-6 pt-0 ml-9 border-t border-zinc-100">
-                        <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl">
-                          {item.answer}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             );
           })}
