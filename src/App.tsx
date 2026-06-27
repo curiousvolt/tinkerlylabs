@@ -212,6 +212,19 @@ export default function App() {
                 </span>
               </span>
             </motion.h1>
+
+            {/* Crafted by IITians tag — sits directly under the headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.45 }}
+              className="flex justify-center mt-3"
+            >
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[10px] font-sans font-semibold tracking-widest uppercase text-[#414C93] bg-[#414C93]/8 border border-[#414C93]/20">
+                <span className="text-sm leading-none">🎓</span>
+                Crafted by IITians
+              </span>
+            </motion.div>
           </div>
 
           {/* Hero description label */}
@@ -301,38 +314,7 @@ export default function App() {
             </a>
           </motion.div>
 
-          {/* ── Credibility Trust Bar ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85 }}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8"
-          >
-            {/* IITian Badge */}
-            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#1D1832]/5 to-[#414C93]/8 border border-[#414C93]/15 shadow-sm">
-              <span className="text-base leading-none">🎓</span>
-              <span className="font-sans font-semibold text-[11px] tracking-wide text-[#1D1832]">
-                Created by <span className="text-[#414C93] font-bold">IITians</span>
-              </span>
-            </div>
 
-            {/* Divider dot — hidden on mobile */}
-            <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300" />
-
-            {/* Udemy badge */}
-            <div className="flex items-center gap-2 text-[11px] font-sans text-zinc-500">
-              <span className="text-base leading-none">🎬</span>
-              <span>Available on <span className="font-semibold text-zinc-700">Udemy</span></span>
-            </div>
-
-            <span className="hidden sm:block w-1 h-1 rounded-full bg-zinc-300" />
-
-            {/* No-fluff promise */}
-            <div className="flex items-center gap-2 text-[11px] font-sans text-zinc-500">
-              <span className="text-base leading-none">⚡</span>
-              <span><span className="font-semibold text-zinc-700">3-hour</span> practical course</span>
-            </div>
-          </motion.div>
         </div>
       </section>
 
