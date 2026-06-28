@@ -1,21 +1,9 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 
 export function ThreeDBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (isMobile) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -28,6 +16,7 @@ export function ThreeDBackground() {
     let height = 0;
 
     const mouse = { x: -1000, y: -1000 };
+    const tilt = { x: 0, y: 0 };
 
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
@@ -37,6 +26,19 @@ export function ThreeDBackground() {
     const handleMouseLeave = () => {
       mouse.x = -1000;
       mouse.y = -1000;
+    };
+
+    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (e.gamma !== null && e.beta !== null) {
+        // gamma: left-to-right tilt [-90, 90]
+        // beta: front-to-back tilt [-180, 180] (assume 45 deg is neutral holding angle)
+        tilt.x = e.gamma / 45; // scale sensitivity
+        tilt.y = (e.beta - 45) / 45;
+        
+        // Clamp to [-1.5, 1.5]
+        tilt.x = Math.max(-1.5, Math.min(1.5, tilt.x));
+        tilt.y = Math.max(-1.5, Math.min(1.5, tilt.y));
+      }
     };
 
     const resize = () => {
@@ -68,11 +70,11 @@ export function ThreeDBackground() {
         this.radius = Math.random() * 2 + 1;
         
         const colors = [
-          { fill: "rgba(150, 168, 143, 0.8)", shadow: "rgba(150, 168, 143, 1)" },
-          { fill: "rgba(227, 155, 75, 0.8)", shadow: "rgba(227, 155, 75, 1)" },
-          { fill: "rgba(244, 241, 234, 0.9)", shadow: "rgba(244, 241, 234, 1)" },
-          { fill: "rgba(100, 120, 95, 0.7)", shadow: "rgba(100, 120, 95, 0.9)" },
-          { fill: "rgba(208, 124, 91, 0.65)", shadow: "rgba(208, 124, 91, 0.85)" },
+          { fill: "rgba(150, 168, 143, 0.8)", shadow: "rgba(150, 168, 143, 1)" }, // light sage
+          { fill: "rgba(227, 155, 75, 0.8)", shadow: "rgba(227, 155, 75, 1)" },   // smoked amber
+          { fill: "rgba(244, 241, 234, 0.9)", shadow: "rgba(244, 241, 234, 1)" }, // warm sand
+          { fill: "rgba(100, 120, 95, 0.7)", shadow: "rgba(100, 120, 95, 0.9)" },   // forest mid
+          { fill: "rgba(208, 124, 91, 0.65)", shadow: "rgba(208, 124, 91, 0.85)" }, // terracotta
         ];
         const selected = colors[Math.floor(Math.random() * colors.length)];
         this.color = selected.fill;
@@ -80,17 +82,19 @@ export function ThreeDBackground() {
       }
 
       update() {
+        // React to mouse
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < 200) {
           const force = (200 - dist) / 200;
-          this.vx -= (dx / dist) * force * 0.1;
+          this.vx -= (dx / dist) * force * 0.1; // Repel slightly
           this.vy -= (dy / dist) * force * 0.1;
         } else {
-          this.vx += (this.baseVx - this.vx) * 0.05;
-          this.vy += (this.baseVy - this.vy) * 0.05;
+          // Gradually return to base velocity + tilt bias
+          this.vx += (this.baseVx + tilt.x * 0.15 - this.vx) * 0.05;
+          this.vy += (this.baseVy + tilt.y * 0.15 - this.vy) * 0.05;
         }
 
         this.x += this.vx;
@@ -112,6 +116,7 @@ export function ThreeDBackground() {
         ctx.fillStyle = this.color;
         ctx.fill();
 
+        // Glow effect
         ctx.shadowBlur = 10;
         ctx.shadowColor = this.shadowColor;
       }
@@ -119,15 +124,16 @@ export function ThreeDBackground() {
 
     const initParticles = () => {
       particles = [];
-      const numParticles = Math.floor((width * height) / 10000);
+      const numParticles = Math.floor((width * height) / 10000); // Increased density slightly
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }
     };
 
     const drawLines = () => {
-      ctx.shadowBlur = 0;
+      ctx.shadowBlur = 0; // Turn off shadow for lines for better performance
       for (let i = 0; i < particles.length; i++) {
+        // Line to mouse
         const mouseDx = particles[i].x - mouse.x;
         const mouseDy = particles[i].y - mouse.y;
         const mouseDist = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
@@ -152,7 +158,7 @@ export function ThreeDBackground() {
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             const opacity = 1 - distance / 150;
-            ctx.strokeStyle = `rgba(150, 168, 143, ${opacity * 0.25})`;
+            ctx.strokeStyle = `rgba(150, 168, 143, ${opacity * 0.25})`; // Subtle sage lines
             ctx.lineWidth = 1;
             ctx.stroke();
           }
@@ -162,17 +168,21 @@ export function ThreeDBackground() {
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
+
       drawLines();
+
       particles.forEach((particle) => {
         particle.update();
         particle.draw(ctx);
       });
+
       animationFrameId = requestAnimationFrame(animate);
     };
 
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseout", handleMouseLeave);
+    window.addEventListener("deviceorientation", handleDeviceOrientation);
 
     resize();
     animate();
@@ -181,28 +191,10 @@ export function ThreeDBackground() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseout", handleMouseLeave);
+      window.removeEventListener("deviceorientation", handleDeviceOrientation);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isMobile]);
-
-  if (isMobile) {
-    return (
-      <div 
-        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
-        style={{
-          background: "radial-gradient(circle at 50% 50%, rgba(163,186,245,0.15) 0%, transparent 80%)",
-          animation: "pulse 8s infinite alternate ease-in-out"
-        }}
-      >
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.7; }
-            100% { transform: scale(1.05); opacity: 1; }
-          }
-        `}} />
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <canvas
