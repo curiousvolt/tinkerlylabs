@@ -114,7 +114,7 @@ export default function WhoThisIsFor({ onJoinClick }: WhoThisIsForProps) {
           transition={{ delay: 0.1 }}
           className="mt-4 text-3xl sm:text-4xl md:text-6xl font-display font-extrabold tracking-tight text-[#131911] leading-tight"
         >
-          For people already{" "}
+          For people{" "}
           <span className="text-[#E39B4B] neon-glow-text">
             allergic to average.
           </span>
