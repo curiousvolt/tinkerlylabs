@@ -110,9 +110,7 @@ export function ThreeDBackground() {
 
     const initParticles = () => {
       particles = [];
-      const isMobile = width < 768;
-      const density = isMobile ? 20000 : 10000; // fewer particles on mobile
-      const numParticles = Math.min(Math.floor((width * height) / density), isMobile ? 35 : 200);
+      const numParticles = Math.floor((width * height) / 10000); // Increased density slightly
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }

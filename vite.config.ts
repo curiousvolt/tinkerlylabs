@@ -23,8 +23,6 @@ export default defineConfig(() => {
             'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
             // Lucide icons
             'vendor-icons': ['lucide-react'],
-            // React-icons (large SVG icon set) — only loaded by AIIconFolderAnimator
-            'vendor-react-icons': ['react-icons'],
           },
         },
       },
