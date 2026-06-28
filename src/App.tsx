@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import CustomCursor from "./components/CustomCursor";
 
 // Lazy-load all heavy sections — they load as the user scrolls
-import AIIconFolderAnimator from "./components/AIIconFolderAnimator";
+const AIIconFolderAnimator = lazy(() => import("./components/AIIconFolderAnimator"));
 const WhatYouWillLearn     = lazy(() => import("./components/WhatYouWillLearn"));
 const WhoThisIsFor         = lazy(() => import("./components/WhoThisIsFor"));
 const ThreeDBackground     = lazy(() => import("./components/ThreeDBackground").then(m => ({ default: m.ThreeDBackground })));
