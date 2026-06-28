@@ -1,9 +1,21 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 export function ThreeDBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -56,11 +68,11 @@ export function ThreeDBackground() {
         this.radius = Math.random() * 2 + 1;
         
         const colors = [
-          { fill: "rgba(150, 168, 143, 0.8)", shadow: "rgba(150, 168, 143, 1)" }, // light sage
-          { fill: "rgba(227, 155, 75, 0.8)", shadow: "rgba(227, 155, 75, 1)" },   // smoked amber
-          { fill: "rgba(244, 241, 234, 0.9)", shadow: "rgba(244, 241, 234, 1)" }, // warm sand
-          { fill: "rgba(100, 120, 95, 0.7)", shadow: "rgba(100, 120, 95, 0.9)" },   // forest mid
-          { fill: "rgba(208, 124, 91, 0.65)", shadow: "rgba(208, 124, 91, 0.85)" }, // terracotta
+          { fill: "rgba(150, 168, 143, 0.8)", shadow: "rgba(150, 168, 143, 1)" },
+          { fill: "rgba(227, 155, 75, 0.8)", shadow: "rgba(227, 155, 75, 1)" },
+          { fill: "rgba(244, 241, 234, 0.9)", shadow: "rgba(244, 241, 234, 1)" },
+          { fill: "rgba(100, 120, 95, 0.7)", shadow: "rgba(100, 120, 95, 0.9)" },
+          { fill: "rgba(208, 124, 91, 0.65)", shadow: "rgba(208, 124, 91, 0.85)" },
         ];
         const selected = colors[Math.floor(Math.random() * colors.length)];
         this.color = selected.fill;
@@ -68,17 +80,15 @@ export function ThreeDBackground() {
       }
 
       update() {
-        // React to mouse
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < 200) {
           const force = (200 - dist) / 200;
-          this.vx -= (dx / dist) * force * 0.1; // Repel slightly
+          this.vx -= (dx / dist) * force * 0.1;
           this.vy -= (dy / dist) * force * 0.1;
         } else {
-          // Gradually return to base velocity
           this.vx += (this.baseVx - this.vx) * 0.05;
           this.vy += (this.baseVy - this.vy) * 0.05;
         }
@@ -102,7 +112,6 @@ export function ThreeDBackground() {
         ctx.fillStyle = this.color;
         ctx.fill();
 
-        // Glow effect
         ctx.shadowBlur = 10;
         ctx.shadowColor = this.shadowColor;
       }
@@ -110,16 +119,15 @@ export function ThreeDBackground() {
 
     const initParticles = () => {
       particles = [];
-      const numParticles = Math.floor((width * height) / 10000); // Increased density slightly
+      const numParticles = Math.floor((width * height) / 10000);
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }
     };
 
     const drawLines = () => {
-      ctx.shadowBlur = 0; // Turn off shadow for lines for better performance
+      ctx.shadowBlur = 0;
       for (let i = 0; i < particles.length; i++) {
-        // Line to mouse
         const mouseDx = particles[i].x - mouse.x;
         const mouseDy = particles[i].y - mouse.y;
         const mouseDist = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
@@ -144,7 +152,7 @@ export function ThreeDBackground() {
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             const opacity = 1 - distance / 150;
-            ctx.strokeStyle = `rgba(150, 168, 143, ${opacity * 0.25})`; // Subtle sage lines
+            ctx.strokeStyle = `rgba(150, 168, 143, ${opacity * 0.25})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
@@ -154,14 +162,11 @@ export function ThreeDBackground() {
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
-
       drawLines();
-
       particles.forEach((particle) => {
         particle.update();
         particle.draw(ctx);
       });
-
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -178,7 +183,26 @@ export function ThreeDBackground() {
       window.removeEventListener("mouseout", handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isMobile]);
+
+  if (isMobile) {
+    return (
+      <div 
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+        style={{
+          background: "radial-gradient(circle at 50% 50%, rgba(163,186,245,0.15) 0%, transparent 80%)",
+          animation: "pulse 8s infinite alternate ease-in-out"
+        }}
+      >
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            100% { transform: scale(1.05); opacity: 1; }
+          }
+        `}} />
+      </div>
+    );
+  }
 
   return (
     <canvas
