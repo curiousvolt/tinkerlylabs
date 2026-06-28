@@ -69,14 +69,14 @@ export default function CohortGrid() {
     <>
       {/* 2. Syllabus Cohort Grid Component (Replacing Concentric Orbit) */}
       <div className="w-full max-w-5xl mx-auto px-4 mb-16">
-        <motion.h3
+        <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-3xl sm:text-4xl font-display font-bold text-[#131911] text-center mb-10"
         >
           What you'll learn in this Course
-        </motion.h3>
+        </motion.h2>
 
         {/* Top card (Card 1) */}
         <GlowCard delay={0.1} className="p-8 sm:p-12 mb-6 shadow-2xl">
@@ -87,11 +87,11 @@ export default function CohortGrid() {
                 <span className="text-7xl sm:text-8xl font-display font-bold text-zinc-200 leading-none -mt-2">
                   1
                 </span>
-                <h4 className="text-3xl sm:text-4xl font-display font-bold text-[#131911] leading-tight">
+                <h3 className="text-3xl sm:text-4xl font-display font-bold text-[#131911] leading-tight">
                   Understanding
                   <br />
                   AI
-                </h4>
+                </h3>
               </div>
               <p className="text-zinc-600 font-sans mb-10 text-sm sm:text-base">
                 Master the fundamentals of Large Language Models and build a
@@ -209,10 +209,10 @@ export default function CohortGrid() {
               <span className="text-6xl font-display font-bold text-zinc-200 leading-none -mt-1">
                 2
               </span>
-              <h4 className="text-xl font-display font-bold text-[#131911] leading-tight">
+              <h3 className="text-xl font-display font-bold text-[#131911] leading-tight">
                 Prompting
                 <br />& Tools
-              </h4>
+              </h3>
             </div>
 
             {/* Subtle line beneath heading */}
@@ -279,11 +279,11 @@ export default function CohortGrid() {
               <span className="text-6xl font-display font-bold text-zinc-200 leading-none -mt-1">
                 3
               </span>
-              <h4 className="text-xl font-display font-bold text-[#131911] leading-tight">
+              <h3 className="text-xl font-display font-bold text-[#131911] leading-tight">
                 Build Real
                 <br />
                 Things
-              </h4>
+              </h3>
             </div>
 
             {/* Subtle line beneath heading */}
@@ -438,11 +438,11 @@ export default function CohortGrid() {
               <span className="text-6xl font-display font-bold text-zinc-200 leading-none -mt-1">
                 4
               </span>
-              <h4 className="text-xl font-display font-bold text-[#131911] leading-tight">
+              <h3 className="text-xl font-display font-bold text-[#131911] leading-tight">
                 The Complete
                 <br />
                 Picture
-              </h4>
+              </h3>
             </div>
 
             {/* Subtle line beneath heading */}

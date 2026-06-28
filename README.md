@@ -1,8 +1,11 @@
-# Tinkerlylabs
+# Tinkerly Labs
 
-Welcome to Tinkerlylabs! This repository contains the AI waitlist page.
+Welcome to Tinkerly Labs! This repository contains the AI waitlist landing page and backend integration for early access signups.
 
-View your app in AI Studio: https://ai.studio/apps/866f45fa-a115-4dfe-8230-7c60433e4e97
+## Features
+- **Frontend:** React 19, Vite, Tailwind CSS v4, Motion (Framer Motion), Three.js
+- **Backend:** Netlify Functions (`/api/subscribe`) connecting to Google Sheets
+- **Design:** Modern, premium, clean aesthetic with 3D and scroll animations
 
 ## Run Locally
 
@@ -13,11 +16,7 @@ View your app in AI Studio: https://ai.studio/apps/866f45fa-a115-4dfe-8230-7c604
    npm install --legacy-peer-deps
    ```
 2. Copy `.env.example` to `.env` and fill in Google service account credentials.
-3. Run the backend API server:
-   ```bash
-   npm run api
-   ```
-4. Run the frontend:
+3. Run the frontend:
    ```bash
    npm run dev
    ```
@@ -27,10 +26,6 @@ View your app in AI Studio: https://ai.studio/apps/866f45fa-a115-4dfe-8230-7c604
 1. Connect this repository to Netlify.
 2. In Netlify Site Settings, configure these Environment Variables:
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
-   - `GOOGLE_PRIVATE_KEY` (ensure newlines are preserved)
+   - `GOOGLE_PRIVATE_KEY` (ensure newlines are properly formatted)
    - `GOOGLE_SHEET_ID`
-
----
-
-Made with ❤️ by the Tinkerlylabs team
-
+   - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` (set to `true` to speed up builds)

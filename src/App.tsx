@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import CustomCursor from "./components/CustomCursor";
 
 // Lazy-load all heavy sections — they load as the user scrolls
-const AIIconFolderAnimator = lazy(() => import("./components/AIIconFolderAnimator"));
+import AIIconFolderAnimator from "./components/AIIconFolderAnimator";
 const WhatYouWillLearn     = lazy(() => import("./components/WhatYouWillLearn"));
 const WhoThisIsFor         = lazy(() => import("./components/WhoThisIsFor"));
 const ThreeDBackground     = lazy(() => import("./components/ThreeDBackground").then(m => ({ default: m.ThreeDBackground })));
@@ -153,6 +153,7 @@ export default function App() {
       </header>
 
       {/* HERO SECTION */}
+      <main>
       <section
         id="hero"
         className="relative min-h-screen pt-32 pb-20 overflow-hidden flex flex-col items-center justify-center text-center px-4"
@@ -175,45 +176,6 @@ export default function App() {
         </Suspense>
 
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center justify-center w-full">
-          {/* IIT Roorkee Building SVG */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="flex flex-col items-center gap-0 mb-4"
-          >
-            <div className="relative w-[120px]">
-              {/* Background "Ghost" SVG in a lower shade */}
-              <svg 
-                className="w-full h-auto text-zinc-600/20 overflow-visible"
-                viewBox="0 0 1458 317" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path 
-                  d="M728.278 0C752.846 14.361 764.81 25.906 768.068 54.574L778.154 54.853L778.322 67.973L768.564 68.167C768.906 80.35 769.031 92.538 768.941 104.725C809.605 120.069 842 143.773 861.014 184.236C869.014 201.26 875.228 228.711 875.935 247.752C922.513 247.95 971.334 247.014 1017.7 247.936L1018.146 270.471C1052.946 271.173 1089.243 270.645 1124.227 270.679L1346.109 270.757C1346.116 281.472 1346.22 292.187 1346.424 302.901L1457.617 303.014L1458 316.519L1333.017 316.369L1333.035 284.257L1004.497 284.299L1004.563 261.211C958.655 261.22 907.368 260.059 861.831 261.289C863.703 224.756 853.185 186.323 828.356 158.814C810.125 138.614 782.404 121.661 755.789 115.875L755.5 68.118L729.871 68.19L702.5 68.118L702.211 115.875C675.596 121.661 647.875 138.614 629.644 158.814C604.815 186.323 594.297 224.756 596.169 261.289C550.632 260.059 499.345 261.22 453.437 261.211L453.503 284.299L124.965 284.257L124.983 316.369L0 316.519L0.383 303.014L111.576 302.901C111.78 292.187 111.884 281.472 111.891 270.757L333.773 270.679C368.757 270.645 405.054 271.173 439.854 270.471L440.3 247.936C486.666 247.014 535.487 247.95 582.065 247.752C582.772 228.711 588.986 201.26 596.986 184.236C616 143.773 648.395 120.069 689.059 104.725C688.969 92.538 689.094 80.35 689.436 68.167L679.678 67.973L679.846 54.853L689.932 54.574C693.19 25.906 705.154 14.361 728.278 0Z" 
-                  fill="currentColor" 
-                />
-              </svg>
-
-              {/* Animated Overlay SVG */}
-              <motion.svg 
-                className="w-full h-auto text-zinc-600 overflow-visible absolute inset-0"
-                viewBox="0 0 1458 317" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                initial={{ clipPath: "inset(0% 50% 0% 50%)" }}
-                animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
-                transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse", repeatDelay: 1 }}
-              >
-                <path 
-                  d="M728.278 0C752.846 14.361 764.81 25.906 768.068 54.574L778.154 54.853L778.322 67.973L768.564 68.167C768.906 80.35 769.031 92.538 768.941 104.725C809.605 120.069 842 143.773 861.014 184.236C869.014 201.26 875.228 228.711 875.935 247.752C922.513 247.95 971.334 247.014 1017.7 247.936L1018.146 270.471C1052.946 271.173 1089.243 270.645 1124.227 270.679L1346.109 270.757C1346.116 281.472 1346.22 292.187 1346.424 302.901L1457.617 303.014L1458 316.519L1333.017 316.369L1333.035 284.257L1004.497 284.299L1004.563 261.211C958.655 261.22 907.368 260.059 861.831 261.289C863.703 224.756 853.185 186.323 828.356 158.814C810.125 138.614 782.404 121.661 755.789 115.875L755.5 68.118L729.871 68.19L702.5 68.118L702.211 115.875C675.596 121.661 647.875 138.614 629.644 158.814C604.815 186.323 594.297 224.756 596.169 261.289C550.632 260.059 499.345 261.22 453.437 261.211L453.503 284.299L124.965 284.257L124.983 316.369L0 316.519L0.383 303.014L111.576 302.901C111.78 292.187 111.884 281.472 111.891 270.757L333.773 270.679C368.757 270.645 405.054 271.173 439.854 270.471L440.3 247.936C486.666 247.014 535.487 247.95 582.065 247.752C582.772 228.711 588.986 201.26 596.986 184.236C616 143.773 648.395 120.069 689.059 104.725C688.969 92.538 689.094 80.35 689.436 68.167L679.678 67.973L679.846 54.853L689.932 54.574C693.19 25.906 705.154 14.361 728.278 0Z" 
-                  fill="currentColor" 
-                />
-              </motion.svg>
-            </div>
-          </motion.div>
-
           {/* Presenter Pill Badge */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -221,7 +183,7 @@ export default function App() {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-[5px] rounded-full bg-white/80 border border-[#96A88F]/25 text-xs leading-none font-bold tracking-widest text-zinc-600 mb-6 shadow-sm"
           >
-            <img src="/logo.png" alt="Crafted by IITians" className="w-5 h-5 object-contain" />
+            <img src="/logo.png" alt="Crafted by IITians" className="w-5 h-5 object-contain" width={20} height={20} />
             <span className="pt-[1px]">Crafted by IITians</span>
           </motion.div>
 
@@ -384,6 +346,8 @@ export default function App() {
         <FAQ />
       </Suspense>
 
+      </main>
+
       {/* PREMIUM MINIMALIST FOOTER */}
       <footer id="waitlist" className="py-8 border-t border-[#96A88F]/15 bg-zinc-50 relative z-10 px-6 overflow-hidden">
         <div className="max-w-xl mx-auto flex flex-col items-center gap-4 text-center">
@@ -391,7 +355,7 @@ export default function App() {
           {/* 1. Brand Logo & Name (Styled like Carbon Beauty) */}
           <div className="flex flex-col items-center select-none">
             <div className="w-32 h-28 mb-2 text-[#96A88F]/80 flex items-center justify-center">
-              <img src="/logo.png" alt="Tinkerly Labs" className="w-28 h-28 object-contain" />
+              <img src="/logo.png" alt="Tinkerly Labs" className="w-28 h-28 object-contain" width={112} height={112} />
             </div>
             <span className="font-display font-medium text-base tracking-[0.3em] text-[#131911] uppercase leading-none">
               Tinkerly
@@ -607,7 +571,7 @@ export default function App() {
           {/* 6. Simple Copyright (Centered & Clean) */}
           <div className="mt-3">
             <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">
-              © 2026 Tinkerly Labs · Crafted by IITians
+              © 2026 Tinkerly Labs
             </span>
           </div>
 

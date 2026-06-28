@@ -120,9 +120,9 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                     Waitlist Access
                   </span>
 
-                  <h3 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-[#131911] mb-3">
+                  <h2 className="text-2xl sm:text-3xl font-display font-extrabold tracking-tight text-[#131911] mb-3">
                     Unlock the Operating System
-                  </h3>
+                  </h2>
 
                   <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mb-8 leading-relaxed font-sans">
                     Join the exclusive builder waitlist. Be the first to secure early-bird access and receive custom cohort resources.
@@ -221,9 +221,9 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                     <CheckCircle2 className="w-8 h-8" />
                   </motion.div>
 
-                  <h3 className="text-2xl font-display font-extrabold tracking-tight text-[#131911] mb-3">
+                  <h2 className="text-2xl font-display font-extrabold tracking-tight text-[#131911] mb-3">
                     You're Locked In
-                  </h3>
+                  </h2>
 
                   <p className="text-xs sm:text-sm text-zinc-600 max-w-xs leading-relaxed font-sans mb-2">
                     We've added <span className="text-[#E39B4B] font-mono text-xs">{email.toLowerCase()}</span> to the waitlist.

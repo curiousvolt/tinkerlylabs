@@ -124,7 +124,7 @@ export default function HyperScroll() {
             <span>VOL. III NO. ${art.id}</span>
             <span>${art.tag}</span>
           </div>
-          <h2 class="news-title">${art.title}</h2>
+          <h3 class="news-title">${art.title}</h3>
           <div class="news-byline">By ${art.author} — Labs Desk</div>
           <div class="news-body">${art.para}</div>
           <div class="news-footer">
@@ -572,7 +572,7 @@ export default function HyperScroll() {
                   }}
                 >
                   <div className="text-[6px] sm:text-[7px] font-serif font-bold border-b border-black/10 pb-1 mb-1 tracking-wider text-center uppercase text-red-600/80">Tinkerly Gazette</div>
-                  <h4 className="text-[8px] sm:text-[10px] font-serif font-extrabold leading-tight mb-1 text-[#000] uppercase line-clamp-3">{art.title}</h4>
+                  <h3 className="text-[8px] sm:text-[10px] font-serif font-extrabold leading-tight mb-1 text-[#000] uppercase line-clamp-3">{art.title}</h3>
                   <p className="text-[6px] sm:text-[7.5px] font-serif leading-relaxed text-[#222] line-clamp-3 mb-1">{art.para}</p>
                   <div className="text-[5.5px] sm:text-[6px] font-mono text-[#777] border-t border-dashed border-black/10 pt-1 flex justify-between">
                     <span>VOL. III NO. {art.id}</span>
@@ -594,7 +594,7 @@ export default function HyperScroll() {
                 const left = -10 + (rand2 * 110) + '%';
                 const rotate = -45 + (rand3 * 90);
                 return (
-                  <h2 
+                  <h3 
                     key={`clumsy-txt-${idx}`}
                     className="absolute text-5xl sm:text-7xl md:text-9xl font-display font-black text-transparent [-webkit-text-stroke:1px_rgba(0,0,0,0.15)] whitespace-nowrap"
                     style={{
@@ -604,7 +604,7 @@ export default function HyperScroll() {
                     }}
                   >
                     {txt}
-                  </h2>
+                  </h3>
                 );
               })}
             </div>
@@ -619,9 +619,9 @@ export default function HyperScroll() {
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#96A88F]/10 border border-[#96A88F]/20 text-[9px] font-mono font-bold tracking-[0.2em] text-[#556350] uppercase mb-8">
               THE AI HYPOTHESIS
             </span>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight text-[#131911] leading-tight mb-6">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight text-[#131911] leading-tight mb-6">
               Yeah. That's why this course exists.
-            </h3>
+            </h2>
             <p className="text-sm sm:text-base text-zinc-600 font-sans max-w-xl mx-auto leading-relaxed mb-8">
               While everyone else is hyping up complex AI jargon, we are cutting through the noise. This is your clean, simple, and practical guide to actually building with AI.
             </p>
