@@ -3,17 +3,27 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { Sparkles } from "lucide-react";
 
 const TAGS_ROW_1 = [
-  "Designers who prototype with teeth",
-  "Founders who still care about craft",
-  "Developers building taste",
-  "Creators with too many tools",
+  "Curious Minds",
+  "Students",
+  "Developers",
+  "Product Managers",
+  "Founders",
+  "Content Creators",
+  "Working Professionals",
+  "Career Switchers",
+  "Side Project Builders",
+  "Lifelong Learners"
 ];
 
 const TAGS_ROW_2 = [
-  "Teams tired of AI theater",
-  "Operators who want leverage",
-  "Builders with taste",
-  "Anyone done with prompt dumps",
+  "Tired of AI hype",
+  "Done being fooled by LinkedIn posts",
+  "Want to build but don't know where to start",
+  "Sick of vague AI advice",
+  "Want the honest picture",
+  "Overwhelmed by too many tools",
+  "Want to use AI without losing their brain",
+  "Done watching others build while they scroll"
 ];
 
 interface WhoThisIsForProps {
@@ -149,7 +159,7 @@ export default function WhoThisIsFor({ onJoinClick }: WhoThisIsForProps) {
       <div className="border-t border-[#96A88F]/15 pt-8 relative z-10">
         <div className="max-w-7xl mx-auto px-4 mb-8 text-center">
           <p className="text-xs font-mono tracking-[0.2em] text-zinc-600 uppercase">
-            Synchronized Builder Demographics
+            This is for you if
           </p>
         </div>
 
