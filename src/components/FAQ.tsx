@@ -90,11 +90,12 @@ export default function FAQ() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className={`group border rounded-2xl bg-white transition-[border-color,box-shadow] duration-300 ${
+                className={`group border rounded-2xl bg-white grid overflow-hidden transition-[grid-template-rows,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
                   isOpen
                     ? "border-[#E39B4B]/30 shadow-[0_4px_30px_rgba(150,168,143,0.08)]"
                     : "border-[#96A88F]/15 hover:border-[#96A88F]/30"
                 }`}
+                style={{ gridTemplateColumns: "1fr", gridTemplateRows: isOpen ? "0.1fr 1fr" : "0.1fr 0fr" }}
               >
                 {/* Trigger */}
                 <button
@@ -113,7 +114,6 @@ export default function FAQ() {
                     </span>
                   </div>
                   <div className="ml-4 shrink-0">
-                    {/* CSS-only rotation — no Framer Motion on the icon to avoid re-render */}
                     <div
                       className={`w-7 h-7 rounded-full flex items-center justify-center border transition-all duration-300 ${
                         isOpen
@@ -126,25 +126,16 @@ export default function FAQ() {
                   </div>
                 </button>
 
-                {/*
-                  CSS grid-template-rows accordion — the ONLY truly jitter-free technique.
-                  grid-template-rows: 0fr → 1fr is handled entirely by the compositor;
-                  no JS layout recalculation happens on each frame.
-                */}
-                <div
-                  className="grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                  style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-                >
-                  <div className="overflow-hidden">
-                    <div
-                      className={`px-6 pb-6 pt-0 ml-8 border-t border-zinc-100 transition-opacity duration-300 ${
-                        isOpen ? "opacity-100" : "opacity-0"
-                      }`}
-                    >
-                      <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
-                        {item.answer}
-                      </p>
-                    </div>
+                {/* Content */}
+                <div className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]">
+                  <div
+                    className={`px-6 pb-6 pt-0 ml-8 border-t border-zinc-100 transition-opacity duration-300 ${
+                      isOpen ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
+                      {item.answer}
+                    </p>
                   </div>
                 </div>
               </motion.div>

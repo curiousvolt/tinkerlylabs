@@ -14,6 +14,10 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cancel close timer on unmount to prevent calling onClose on unmounted component
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
 
   // Focus input on open
   useEffect(() => {
@@ -51,7 +55,8 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
       });
       if (!res.ok) throw new Error('Failed');
       setIsSubmitted(true);
-      setTimeout(() => { onClose(); }, 2800);
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+      closeTimer.current = setTimeout(() => { onClose(); }, 2800);
     } catch {
       setError('SOMETHING WENT WRONG. TRY AGAIN.');
     } finally {

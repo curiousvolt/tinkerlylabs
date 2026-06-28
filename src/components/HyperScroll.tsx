@@ -352,8 +352,6 @@ export default function HyperScroll() {
             animation: textShine 5s linear infinite;
           }
 
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Syncopate:wght@400;700&display=swap');
-
           /* --- POST PROCESSING OVERLAYS --- */
           #hyper-scroll-section .vignette {
             position: absolute;
@@ -621,9 +619,12 @@ export default function HyperScroll() {
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#96A88F]/10 border border-[#96A88F]/20 text-[9px] font-mono font-bold tracking-[0.2em] text-[#556350] uppercase mb-8">
               THE AI HYPOTHESIS
             </span>
-            <h3 className="text-3xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight text-[#131911] leading-tight mb-8">
+            <h3 className="text-3xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight text-[#131911] leading-tight mb-6">
               Yeah. That's why this course exists.
             </h3>
+            <p className="text-sm sm:text-base text-zinc-600 font-sans max-w-xl mx-auto leading-relaxed mb-8">
+              While everyone else is hyping up complex AI jargon, we are cutting through the noise. This is your clean, simple, and practical guide to actually building with AI.
+            </p>
             <div className="w-12 h-[1px] bg-[#131911]/20 mx-auto mb-8" />
             <p className="text-zinc-600 font-mono text-[10px] sm:text-xs tracking-[0.25em] uppercase opacity-60">
               TINKERLY LABS — EST. 2026

@@ -7,7 +7,7 @@ import cors from 'cors';
 import { google } from 'googleapis';
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'] }));
 app.use(express.json());
 
 const SHEET_ID = process.env.GOOGLE_SHEET_ID;
