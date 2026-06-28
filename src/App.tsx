@@ -231,8 +231,7 @@ export default function App() {
             transition={{ delay: 0.55 }}
             className="mt-4 text-sm sm:text-base font-sans text-zinc-600 max-w-xl mx-auto px-4 leading-relaxed"
           >
-            A premium, no-fluff course from Tinkerly Labs for turning scattered
-            AI tools into one sharp creative operating system.
+            A 3-hour course that gives you the complete picture - how AI works, what you can build with it, and what everyone else is getting wrong.
           </motion.p>
 
           {/* Floating primary Action buttons */}

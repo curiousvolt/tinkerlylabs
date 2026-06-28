@@ -16,7 +16,6 @@ export function ThreeDBackground() {
     let height = 0;
 
     const mouse = { x: -1000, y: -1000 };
-    const tilt = { x: 0, y: 0 };
 
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
@@ -26,19 +25,6 @@ export function ThreeDBackground() {
     const handleMouseLeave = () => {
       mouse.x = -1000;
       mouse.y = -1000;
-    };
-
-    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
-      if (e.gamma !== null && e.beta !== null) {
-        // gamma: left-to-right tilt [-90, 90]
-        // beta: front-to-back tilt [-180, 180] (assume 45 deg is neutral holding angle)
-        tilt.x = e.gamma / 45; // scale sensitivity
-        tilt.y = (e.beta - 45) / 45;
-        
-        // Clamp to [-1.5, 1.5]
-        tilt.x = Math.max(-1.5, Math.min(1.5, tilt.x));
-        tilt.y = Math.max(-1.5, Math.min(1.5, tilt.y));
-      }
     };
 
     const resize = () => {
@@ -92,9 +78,9 @@ export function ThreeDBackground() {
           this.vx -= (dx / dist) * force * 0.1; // Repel slightly
           this.vy -= (dy / dist) * force * 0.1;
         } else {
-          // Gradually return to base velocity + tilt bias
-          this.vx += (this.baseVx + tilt.x * 0.15 - this.vx) * 0.05;
-          this.vy += (this.baseVy + tilt.y * 0.15 - this.vy) * 0.05;
+          // Gradually return to base velocity
+          this.vx += (this.baseVx - this.vx) * 0.05;
+          this.vy += (this.baseVy - this.vy) * 0.05;
         }
 
         this.x += this.vx;
@@ -182,7 +168,6 @@ export function ThreeDBackground() {
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseout", handleMouseLeave);
-    window.addEventListener("deviceorientation", handleDeviceOrientation);
 
     resize();
     animate();
@@ -191,7 +176,6 @@ export function ThreeDBackground() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseout", handleMouseLeave);
-      window.removeEventListener("deviceorientation", handleDeviceOrientation);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
