@@ -29,7 +29,7 @@ export default function CTASection({ onJoinClick }: CTASectionProps) {
         {/* Content */}
         <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
           <h2 className="text-4xl md:text-6xl font-serif text-white mb-6" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-            Master AI for Your Workflow
+            Be the first in.
           </h2>
           <p className="text-xs md:text-sm font-sans font-light text-white/90 max-w-md mx-auto leading-relaxed mb-8">
             Ready to turn scattered AI tools into a sharp, unified operating system? Take the first step and join the waitlist for Tinkerly Labs today.
