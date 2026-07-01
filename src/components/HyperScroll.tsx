@@ -323,13 +323,13 @@ export default function HyperScroll() {
         
         {/* INTEGRATED HEADER - Cards will fly past this */}
         <h2 
-          className="absolute top-6 md:top-10 left-0 w-full z-[0] text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-clash font-extrabold tracking-tight uppercase text-center leading-normal px-4 pb-2 text-transparent bg-clip-text animate-text-shine select-none pointer-events-none"
+          className="absolute top-6 md:top-10 left-1/2 -translate-x-1/2 z-[0] text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-clash font-extrabold tracking-tight uppercase text-center leading-normal pb-2 text-transparent bg-clip-text animate-text-shine select-none pointer-events-none whitespace-nowrap"
           style={{
             backgroundImage: "linear-gradient(120deg, #131911 35%, #96A88F 50%, #131911 65%)",
             backgroundSize: "200% auto",
           }}
         >
-          <span className="pr-2">WHY THIS COURSE?</span>
+          WHY THIS COURSE?
         </h2>
         
         {/* SCOPED CYBER NEWSPAPER STYLESHEET */}
