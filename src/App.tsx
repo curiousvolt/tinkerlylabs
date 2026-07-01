@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { motion } from "motion/react";
+import { ReactLenis } from "lenis/react";
+import "lenis/dist/lenis.css";
 import CustomCursor from "./components/CustomCursor";
 
 // Lazy-load all heavy sections — they load as the user scrolls
@@ -80,10 +82,11 @@ export default function App() {
   };
 
   return (
-    <div
-      id="app-root"
-      className="min-h-screen bg-[#F9FAF7] text-[#131911] selection:bg-[#E39B4B] selection:text-[#080B07] font-sans relative overflow-x-clip bg-grain"
-    >
+    <ReactLenis root>
+      <div
+        id="app-root"
+        className="min-h-screen bg-[#F9FAF7] text-[#131911] selection:bg-[#E39B4B] selection:text-[#080B07] font-sans relative overflow-x-clip bg-grain"
+      >
       {/* 1. Custom Trailing Liquid Glowing Cursor */}
       <CustomCursor />
 
@@ -581,6 +584,7 @@ export default function App() {
       <Suspense fallback={null}>
         <JoinPopup isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
       </Suspense>
-    </div>
+      </div>
+    </ReactLenis>
   );
 }
