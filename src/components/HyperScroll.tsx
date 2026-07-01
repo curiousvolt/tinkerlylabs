@@ -329,7 +329,7 @@ export default function HyperScroll() {
             backgroundSize: "200% auto",
           }}
         >
-          <span className="pr-2">WHY THIS COHORT?</span>
+          <span className="pr-2">WHY THIS COURSE?</span>
         </h2>
         
         {/* SCOPED CYBER NEWSPAPER STYLESHEET */}
