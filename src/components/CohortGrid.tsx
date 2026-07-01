@@ -16,8 +16,8 @@ function GlowCard({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay, duration: 0.5 }}
-      className={`group relative overflow-hidden bg-white border border-[#96A88F]/25 rounded-[2rem] transition-all duration-500 hover:border-[#96A88F]/50 hover:shadow-xl hover:shadow-[#96A88F]/5 ${className}`}
+      transition={{ delay, duration: 0.5, ease: "easeOut" }}
+      className={`group relative overflow-hidden bg-white border border-[#96A88F]/25 rounded-[2rem] transition-[border-color,box-shadow] duration-500 hover:border-[#96A88F]/50 hover:shadow-xl hover:shadow-[#96A88F]/5 ${className}`}
     >
       {/* Center glow effect on background */}
       <div

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Plus, HelpCircle } from "lucide-react";
 
 interface FAQItem {
@@ -90,12 +90,11 @@ export default function FAQ() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className={`group border rounded-2xl bg-white grid overflow-hidden transition-[grid-template-rows,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                className={`group border rounded-2xl bg-white overflow-hidden transition-[border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
                   isOpen
                     ? "border-[#E39B4B]/30 shadow-[0_4px_30px_rgba(150,168,143,0.08)]"
                     : "border-[#96A88F]/15 hover:border-[#96A88F]/30"
                 }`}
-                style={{ gridTemplateColumns: "1fr", gridTemplateRows: isOpen ? "0.1fr 1fr" : "0.1fr 0fr" }}
               >
                 {/* Trigger */}
                 <button
@@ -127,17 +126,23 @@ export default function FAQ() {
                 </button>
 
                 {/* Content */}
-                <div className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]">
-                  <div
-                    className={`px-6 pb-6 pt-0 ml-8 border-t border-zinc-100 transition-opacity duration-300 ${
-                      isOpen ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
-                      {item.answer}
-                    </p>
-                  </div>
-                </div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-6 pt-0 ml-8 border-t border-zinc-100">
+                        <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
+                          {item.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             );
           })}

@@ -56,7 +56,7 @@ export default function HyperScroll() {
     // --- CONFIGURATION ---
     const CONFIG = {
       itemCount: 12, // 4 cards and 4 background headlines, leaving 4 empty slots for holding
-      starCount: 120,
+      starCount: 40,
       zGap: 800,
       loopSize: 0, // Calculated below
       camSpeed: 2.5
@@ -198,13 +198,13 @@ export default function HyperScroll() {
       const delta = time - lastTime;
       lastTime = time;
 
-      // Smooth scroll interpolation
+      // Smooth scroll interpolation (increased factor to avoid double-smoothing with Lenis)
       const lastScroll = state.scroll;
-      state.scroll += (state.targetScroll - state.scroll) * 0.085; // highly responsive easing
+      state.scroll += (state.targetScroll - state.scroll) * 0.35; 
       state.velocity = state.scroll - lastScroll;
 
-      // Camera Tilt & Shake based on mouse position and inertia
-      const tiltX = state.mouseY * 4 - state.velocity * 0.35;
+      // Camera Tilt & Shake based on mouse position
+      const tiltX = state.mouseY * 4;
       const tiltY = state.mouseX * 4;
 
       world.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
