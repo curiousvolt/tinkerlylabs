@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-clash: "Clash Display", sans-serif;
+  --font-serif-italic: "Newsreader", serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-brand-moss: #0C0F0A;
+  --color-accent-sage: #96A88F;
+  --color-accent-amber: #E39B4B;
+  --color-accent-terracotta: #D07C5B;
+  --color-bg-dark: #080B07;
+  --color-text-ivory: #F4F6F2;
+}
+
+/* Background grain texture overlay */
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* Smooth scrolling globally */
+html { scroll-behavior: smooth; }
+
+/* Hide scrollbar across all browsers */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* Text selection */
+::selection {
+  background: #E39B4B;
+  color: #080B07;
+}
+
+/* Seamless shine sweep — used on hero text and Join Now buttons */
+@keyframes shine {
+  0%   { background-position: 100% center; }
+  100% { background-position: 0%   center; }
+}
+
+.pill-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 100%);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.7);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 10px 30px -10px rgba(150, 168, 143, 0.15),
+    0 4px 12px -2px rgba(0, 0, 0, 0.03),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.8);
+}

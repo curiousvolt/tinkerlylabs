@@ -1,42 +1,31 @@
-# Tinkerlylabs
+# Tinkerly Labs
 
-Welcome to Tinkerlylabs! This repository contains projects and experiments from the Tinkerlylabs team.
+Welcome to Tinkerly Labs! This repository contains the AI waitlist landing page and backend integration for early access signups.
 
-## About
+## Features
+- **Frontend:** React 19, Vite, Tailwind CSS v4, Motion (Framer Motion), Three.js
+- **Backend:** Netlify Functions (`/api/subscribe`) connecting to Google Sheets
+- **Design:** Modern, premium, clean aesthetic with 3D and scroll animations
 
-Tinkerlylabs is a space for innovation and experimentation. Here you'll find various projects, prototypes, and collaborative work.
+## Run Locally
 
-## Getting Started
+**Prerequisites:** Node.js
 
-To get started with this repository:
-
-1. Clone the repository
+1. Install dependencies:
    ```bash
-   git clone https://github.com/tinkerlylabs/tinkerlylabs.git
-   cd tinkerlylabs
+   npm install --legacy-peer-deps
+   ```
+2. Copy `.env.example` to `.env` and fill in Google service account credentials.
+3. Run the frontend:
+   ```bash
+   npm run dev
    ```
 
-2. Follow the specific setup instructions in individual project directories
+## Deploying to Netlify
 
-## Projects
-
-Projects in this repository are organized by directory. Each project should have its own documentation and setup instructions.
-
-## Contributing
-
-We welcome contributions! Please feel free to:
-- Open issues for bugs or feature requests
-- Submit pull requests with improvements
-- Share your ideas and feedback
-
-## License
-
-Please refer to the LICENSE file in this repository for licensing information.
-
-## Support
-
-If you have questions or need help, please open an issue on the repository.
-
----
-
-Made with ❤️ by the Tinkerlylabs team
+1. Connect this repository to Netlify.
+2. In Netlify Site Settings, configure these Environment Variables:
+   - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+   - `GOOGLE_PRIVATE_KEY` (ensure newlines are properly formatted)
+   - `GOOGLE_SHEET_ID`
+   - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` (set to `true` to speed up builds)
