@@ -48,7 +48,7 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="py-24 relative overflow-hidden bg-[#F9FAF7] border-t border-[#96A88F]/15"
+      className="py-24 relative overflow-hidden bg-[#F9FAF7]"
     >
       {/* Background soft glowing radial lights */}
       <div className="absolute top-[20%] left-[10%] w-[450px] h-[450px] bg-[#96A88F]/10 rounded-full blur-[120px] pointer-events-none z-0" />

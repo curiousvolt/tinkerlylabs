@@ -174,14 +174,23 @@ export default function HyperScroll() {
     };
     window.addEventListener("mousemove", handleMouseMove);
 
+    // Cache layout to prevent layout thrashing on scroll
+    let layoutCache = { top: 0, height: 0, windowHeight: 0 };
+    const updateLayoutCache = () => {
+      const rect = container.getBoundingClientRect();
+      layoutCache.top = rect.top + window.scrollY;
+      layoutCache.height = rect.height;
+      layoutCache.windowHeight = window.innerHeight;
+    };
+    window.addEventListener("resize", updateLayoutCache);
+    updateLayoutCache();
+
     // Scroll progress handler
     const handleScroll = () => {
-      const rect = container.getBoundingClientRect();
-      
-      const stickyHeight = rect.height - window.innerHeight;
+      const stickyHeight = layoutCache.height - layoutCache.windowHeight;
       if (stickyHeight <= 0) return;
 
-      const currentScroll = Math.max(0, -rect.top);
+      const currentScroll = Math.max(0, window.scrollY - layoutCache.top);
       const progress = Math.max(0, Math.min(1, currentScroll / stickyHeight));
 
       // Compute target scroll depth
@@ -308,6 +317,7 @@ export default function HyperScroll() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateLayoutCache);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
