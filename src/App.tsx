@@ -1,21 +1,17 @@
-import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import { ReactLenis } from "lenis/react";
 import "lenis/dist/lenis.css";
 import CustomCursor from "./components/CustomCursor";
 
-// Lazy-load all heavy sections — they load as the user scrolls
 import AIIconFolderAnimator from "./components/AIIconFolderAnimator";
-const WhatYouWillLearn     = lazy(() => import("./components/WhatYouWillLearn"));
-const WhoThisIsFor         = lazy(() => import("./components/WhoThisIsFor"));
-const ThreeDBackground     = lazy(() => import("./components/ThreeDBackground").then(m => ({ default: m.ThreeDBackground })));
-const HyperScroll          = lazy(() => import("./components/HyperScroll"));
-const FAQ                  = lazy(() => import("./components/FAQ"));
-const CTASection           = lazy(() => import("./components/CTASection"));
-const JoinPopup            = lazy(() => import("./components/JoinPopup"));
-
-// Minimal section skeleton shown while lazy chunks download
-const SectionFallback = () => <div className="w-full h-32" />;
+import WhatYouWillLearn from "./components/WhatYouWillLearn";
+import WhoThisIsFor from "./components/WhoThisIsFor";
+import { ThreeDBackground } from "./components/ThreeDBackground";
+import HyperScroll from "./components/HyperScroll";
+import FAQ from "./components/FAQ";
+import CTASection from "./components/CTASection";
+import JoinPopup from "./components/JoinPopup";
 
 export default function App() {
   const navRef = useRef<HTMLElement>(null);
@@ -174,9 +170,7 @@ export default function App() {
         {/* Bottom edge intensity */}
         <div className="absolute -bottom-[15%] left-[10%] right-[10%] h-[35%] bg-[#c6b4f7] rounded-[100%] blur-[100px] opacity-50 z-0 pointer-events-none" />
         
-        <Suspense fallback={<div className="absolute inset-0" />}>
-          <ThreeDBackground />
-        </Suspense>
+        <ThreeDBackground />
 
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center justify-center w-full">
           {/* Presenter Pill Badge */}
@@ -318,35 +312,23 @@ export default function App() {
 
       {/* Interactive scroll folder compilation animation */}
       <section className="relative w-full z-10">
-        <Suspense fallback={<SectionFallback />}>
-          <AIIconFolderAnimator />
-        </Suspense>
+        <AIIconFolderAnimator />
       </section>
 
       {/* CORE SYLLABUS GRID: What you'll learn */}
-      <Suspense fallback={<SectionFallback />}>
-        <WhatYouWillLearn />
-      </Suspense>
+      <WhatYouWillLearn />
 
       {/* TARGET CLIENT SEGMENTS & CONCENTRIC AUTHORITY: Who this is for */}
-      <Suspense fallback={<SectionFallback />}>
-        <WhoThisIsFor onJoinClick={() => setIsJoinModalOpen(true)} />
-      </Suspense>
+      <WhoThisIsFor onJoinClick={() => setIsJoinModalOpen(true)} />
 
       {/* 3D HYPER SCROLL VIEWPORT */}
-      <Suspense fallback={<SectionFallback />}>
-        <HyperScroll />
-      </Suspense>
+      <HyperScroll />
 
       {/* GRADIENT CALL TO ACTION SECTION */}
-      <Suspense fallback={<SectionFallback />}>
-        <CTASection onJoinClick={() => setIsJoinModalOpen(true)} />
-      </Suspense>
+      <CTASection onJoinClick={() => setIsJoinModalOpen(true)} />
 
       {/* FREQUENTLY ASKED QUESTIONS SECTION */}
-      <Suspense fallback={<SectionFallback />}>
-        <FAQ />
-      </Suspense>
+      <FAQ />
 
       </main>
 
@@ -581,9 +563,7 @@ export default function App() {
       </footer>
 
       {/* POPUP WAITLIST FORM */}
-      <Suspense fallback={null}>
-        <JoinPopup isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
-      </Suspense>
+      <JoinPopup isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
       </div>
     </ReactLenis>
   );
