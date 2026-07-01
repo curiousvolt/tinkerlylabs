@@ -20,6 +20,7 @@ import {
   SiTailwindcss,
   SiLinear,
   SiFramer,
+  SiHuggingface,
 } from "react-icons/si";
 
 // Pixel-perfect custom SVG icons for top-tier AI platforms
@@ -78,10 +79,20 @@ const SVG_ICONS = {
       alt="Runway"
     />
   ),
+  huggingface: <SiHuggingface className="w-full h-full text-[#FFD21E]" />,
 };
 
 // Precise scattered configuration
 const AI_ICONS_LIST = [
+  {
+    id: "huggingface",
+    name: "Hugging Face",
+    icon: "huggingface",
+    startX: 30,
+    startY: 35,
+    rot: -12,
+    speed: 0.95,
+  },
   {
     id: "chatgpt",
     name: "ChatGPT",
@@ -268,8 +279,27 @@ function AnimatedIcon({
     [0, 0.45],
     [`${item.startY}%`, `${targetY}%`],
   );
-  const scale = useTransform(smoothProgress, [0, 0.3, 0.45], [1, 0.85, 0]);
-  const opacity = useTransform(smoothProgress, [0, 0.3, 0.45], [1, 0.95, 0]);
+  const isSurvivor = [
+    "chatgpt",
+    "claude",
+    "gemini",
+    "huggingface",
+    "notion",
+    "cursor",
+    "midjourney",
+    "perplexity",
+  ].includes(item.id);
+
+  const scale = useTransform(
+    smoothProgress,
+    isSurvivor ? [0, 0.3, 0.45] : [0, 0.15, 0.225],
+    isSurvivor ? [1, 0.85, 0] : [1, 0.5, 0]
+  );
+  const opacity = useTransform(
+    smoothProgress,
+    isSurvivor ? [0, 0.3, 0.45] : [0, 0.15, 0.225],
+    isSurvivor ? [1, 0.95, 0] : [1, 0.5, 0]
+  );
 
   return (
     <motion.div
