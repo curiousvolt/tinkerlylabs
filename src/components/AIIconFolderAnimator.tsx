@@ -79,7 +79,13 @@ const SVG_ICONS = {
       alt="Runway"
     />
   ),
-  huggingface: <SiHuggingface className="w-full h-full text-[#FFD21E]" />,
+  huggingface: (
+    <img
+      src="/huggingface.svg"
+      className="w-full h-full object-contain"
+      alt="Hugging Face"
+    />
+  ),
 };
 
 // Precise scattered configuration

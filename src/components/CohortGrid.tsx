@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import React from "react";
+import { SiOpenai, SiAnthropic } from "react-icons/si";
 
 function GlowCard({
   children,
@@ -137,27 +138,21 @@ export default function CohortGrid() {
                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-40">
                   <motion.div
                     whileHover={{ y: -5 }}
-                    className="w-12 h-12 bg-[#10a37f] rounded-xl flex items-center justify-center shadow-2xl -rotate-[6deg] z-10 cursor-pointer"
+                    className="w-12 h-12 bg-[#10a37f] rounded-xl flex items-center justify-center shadow-2xl -rotate-[6deg] z-10 cursor-pointer p-2.5"
                   >
-                    <span className="text-white font-bold text-sm tracking-tighter">
-                      GPT
-                    </span>
+                    <SiOpenai className="w-full h-full text-white" />
                   </motion.div>
                   <motion.div
                     whileHover={{ y: -5 }}
-                    className="w-14 h-14 bg-[#FFD21E] rounded-xl flex items-center justify-center shadow-2xl z-20 cursor-pointer"
+                    className="w-14 h-14 bg-white border border-[#96A88F]/25 rounded-xl flex items-center justify-center shadow-2xl z-20 cursor-pointer p-2.5"
                   >
-                    <span className="text-2xl">
-                      🤗
-                    </span>
+                    <img src="/huggingface.svg" className="w-full h-full object-contain" alt="Hugging Face" />
                   </motion.div>
                   <motion.div
                     whileHover={{ y: -5 }}
-                    className="w-12 h-12 bg-[#d97757] rounded-xl flex items-center justify-center shadow-2xl rotate-[6deg] z-10 cursor-pointer"
+                    className="w-12 h-12 bg-[#D97706] rounded-xl flex items-center justify-center shadow-2xl rotate-[6deg] z-10 cursor-pointer p-2.5"
                   >
-                    <span className="text-white font-serif font-bold text-xl">
-                      C
-                    </span>
+                    <SiAnthropic className="w-full h-full text-white" />
                   </motion.div>
                 </div>
 
