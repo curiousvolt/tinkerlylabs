@@ -339,6 +339,7 @@ function AnimatedIcon({
 
 export default function AIIconFolderAnimator() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const pulseFolderRef = useRef(false);
   const [pulseFolder, setPulseFolder] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -359,10 +360,10 @@ export default function AIIconFolderAnimator() {
   useEffect(() => {
     return smoothProgress.on("change", (latest) => {
       // Trigger folder pulse when icons have finished converging
-      if (latest >= 0.45) {
-        setPulseFolder(true);
-      } else {
-        setPulseFolder(false);
+      const shouldPulse = latest >= 0.45;
+      if (pulseFolderRef.current !== shouldPulse) {
+        pulseFolderRef.current = shouldPulse;
+        setPulseFolder(shouldPulse);
       }
     });
   }, [smoothProgress]);

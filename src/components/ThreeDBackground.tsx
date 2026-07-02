@@ -14,6 +14,8 @@ export function ThreeDBackground() {
     let animationFrameId: number;
     let width = 0;
     let height = 0;
+    let isVisible = true;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const mouse = { x: -1000, y: -1000 };
 
@@ -30,8 +32,12 @@ export function ThreeDBackground() {
     const resize = () => {
       width = window.innerWidth;
       height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       initParticles();
     };
 
@@ -71,9 +77,10 @@ export function ThreeDBackground() {
         // React to mouse
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const distSq = dx * dx + dy * dy;
 
-        if (dist < 200) {
+        if (distSq < 40000) {
+          const dist = Math.max(Math.sqrt(distSq), 1);
           const force = (200 - dist) / 200;
           this.vx -= (dx / dist) * force * 0.1; // Repel slightly
           this.vy -= (dy / dist) * force * 0.1;
@@ -110,7 +117,9 @@ export function ThreeDBackground() {
 
     const initParticles = () => {
       particles = [];
-      const numParticles = Math.floor((width * height) / 10000); // Increased density slightly
+      const baseCount = Math.floor((width * height) / 18000);
+      const maxParticles = width < 768 ? 55 : 95;
+      const numParticles = prefersReducedMotion ? 24 : Math.min(baseCount, maxParticles);
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }
@@ -122,9 +131,10 @@ export function ThreeDBackground() {
         // Line to mouse
         const mouseDx = particles[i].x - mouse.x;
         const mouseDy = particles[i].y - mouse.y;
-        const mouseDist = Math.sqrt(mouseDx * mouseDx + mouseDy * mouseDy);
+        const mouseDistSq = mouseDx * mouseDx + mouseDy * mouseDy;
 
-        if (mouseDist < 200) {
+        if (mouseDistSq < 40000) {
+          const mouseDist = Math.sqrt(mouseDistSq);
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(mouse.x, mouse.y);
@@ -137,9 +147,10 @@ export function ThreeDBackground() {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSq = dx * dx + dy * dy;
 
-          if (distance < 150) {
+          if (distanceSq < 22500) {
+            const distance = Math.sqrt(distanceSq);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -153,6 +164,11 @@ export function ThreeDBackground() {
     };
 
     const animate = () => {
+      if (!isVisible) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
       ctx.clearRect(0, 0, width, height);
 
       drawLines();
@@ -168,6 +184,13 @@ export function ThreeDBackground() {
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseout", handleMouseLeave);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { rootMargin: "160px" },
+    );
+    observer.observe(canvas);
 
     resize();
     animate();
@@ -176,6 +199,7 @@ export function ThreeDBackground() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseout", handleMouseLeave);
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
     };
   }, []);

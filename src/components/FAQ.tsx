@@ -56,40 +56,29 @@ export default function FAQ() {
 
       <div className="max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center">
         {/* Sub-Badge */}
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <span
           className="text-[10px] font-mono tracking-[0.25em] text-[#E39B4B] uppercase bg-[#E39B4B]/10 px-3.5 py-1 rounded-full border border-[#E39B4B]/20 mb-6"
         >
           CURRICULUM ASSISTANCE
-        </motion.span>
+        </span>
 
         {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
+        <h2
           className="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold tracking-tight text-[#131911] text-center leading-tight mb-14"
         >
           Frequently Asked{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E39B4B] to-[#D07C5B]">
             Questions
           </span>
-        </motion.h2>
+        </h2>
 
         {/* Accordion List — uses CSS grid rows for zero-jitter expand/collapse */}
         <div className="w-full max-w-3xl flex flex-col gap-4">
           {FAQ_DATA.map((item, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <motion.div
+              <div
                 key={idx}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
                 className={`group border rounded-2xl bg-white overflow-hidden transition-[border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
                   isOpen
                     ? "border-[#E39B4B]/30 shadow-[0_4px_30px_rgba(150,168,143,0.08)]"
@@ -143,7 +132,7 @@ export default function FAQ() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             );
           })}
         </div>

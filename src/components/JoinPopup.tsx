@@ -15,6 +15,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formStartedAt = useRef(Date.now());
 
   // Cancel close timer on unmount to prevent calling onClose on unmounted component
   useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
@@ -26,6 +27,7 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
       setEmail("");
       setNewsletter(true);
       setError("");
+      formStartedAt.current = Date.now();
       const timer = setTimeout(() => { inputRef.current?.focus(); }, 150);
       return () => clearTimeout(timer);
     }
@@ -51,7 +53,13 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'popup', newsletter }),
+        body: JSON.stringify({
+          email,
+          source: 'popup',
+          newsletter,
+          website: '',
+          startedAt: formStartedAt.current,
+        }),
       });
       if (!res.ok) throw new Error('Failed');
       setIsSubmitted(true);
@@ -129,6 +137,15 @@ export default function JoinPopup({ isOpen, onClose }: JoinPopupProps) {
                   </p>
 
                   <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="hidden"
+                    />
+
                     {/* Email input */}
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />

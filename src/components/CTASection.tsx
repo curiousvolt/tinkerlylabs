@@ -7,11 +7,7 @@ interface CTASectionProps {
 export default function CTASection({ onJoinClick }: CTASectionProps) {
   return (
     <section className="relative w-full py-12 px-4 md:px-6 z-10 bg-[#F9FAF7]">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      <div
         className="max-w-4xl mx-auto relative rounded-[2.5rem] overflow-hidden shadow-2xl py-16 md:py-20 px-6 flex flex-col items-center justify-center text-center"
       >
         {/* Gradient background */}
@@ -36,13 +32,12 @@ export default function CTASection({ onJoinClick }: CTASectionProps) {
           </p>
           <button
             onClick={onJoinClick}
-            className="px-8 py-3 bg-white text-[#1D1832] font-sans font-semibold text-sm rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_8px_20px_rgba(0,0,0,0.15)] cursor-pointer"
+            className="px-8 py-3 bg-white text-[#1D1832] font-sans font-semibold text-sm rounded-full hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_8px_20px_rgba(0,0,0,0.15)] cursor-pointer outline-none focus:outline-none"
           >
             Join Now
           </button>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
-

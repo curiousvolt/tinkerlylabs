@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import React from "react";
 import { SiOpenai, SiAnthropic } from "react-icons/si";
+import { useLenis } from "lenis/react";
 
 function GlowCard({
   children,
@@ -12,11 +13,7 @@ function GlowCard({
   delay?: number;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.5, ease: "easeOut" }}
+    <div
       className={`group relative overflow-hidden bg-white border border-[#96A88F]/25 rounded-[2rem] transition-[border-color,box-shadow] duration-500 hover:border-[#96A88F]/50 hover:shadow-xl hover:shadow-[#96A88F]/5 ${className}`}
     >
       {/* Center glow effect on background */}
@@ -61,23 +58,21 @@ function GlowCard({
       <div className="relative z-10 w-full h-full flex flex-col">
         {children}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 export default function CohortGrid() {
+  const lenis = useLenis();
   return (
     <>
       {/* 2. Syllabus Cohort Grid Component (Replacing Concentric Orbit) */}
       <div className="w-full max-w-5xl mx-auto px-4 mb-16">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <h2
           className="text-3xl sm:text-4xl font-display font-bold text-[#131911] text-center mb-10"
         >
           What you'll learn in this Course
-        </motion.h2>
+        </h2>
 
         {/* Top card (Card 1) */}
         <GlowCard delay={0.1} className="p-8 sm:p-12 mb-6 shadow-2xl">
@@ -103,10 +98,14 @@ export default function CohortGrid() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
-                  const el = document.getElementById("audience");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                  if (lenis) {
+                    lenis.scrollTo("#audience", { offset: -50 });
+                  } else {
+                    const el = document.getElementById("audience");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }
                 }}
-                className="group/btn relative inline-flex items-center justify-center gap-1.5 bg-[linear-gradient(110deg,#414C93_30%,#606CBA_50%,#414C93_70%)] bg-[length:300%_100%] animate-[shine_4s_linear_infinite] hover:bg-[linear-gradient(110deg,#323b75_30%,#525fa3_50%,#323b75_70%)] border border-transparent text-white font-sans font-bold text-xs uppercase tracking-wider h-[3.25rem] px-12 rounded-full w-full sm:w-auto transition-shadow duration-300 shadow-[0_4px_15px_rgba(65,76,147,0.3)] hover:shadow-[0_6px_20px_rgba(65,76,147,0.4)] cursor-pointer overflow-hidden"
+                className="group/btn gpu-shine-wrapper relative inline-flex items-center justify-center gap-1.5 bg-[linear-gradient(110deg,#414C93_30%,#606CBA_50%,#414C93_70%)] border border-transparent text-white font-sans font-bold text-xs uppercase tracking-wider h-[3.25rem] px-12 rounded-full w-full sm:w-auto transition-shadow duration-300 shadow-[0_4px_15px_rgba(65,76,147,0.3)] hover:shadow-[0_6px_20px_rgba(65,76,147,0.4)] cursor-pointer overflow-hidden"
               >
                 <span className="relative flex items-center justify-center overflow-hidden h-[16px] tracking-wide z-10">
                   {"Join Now".split("").map((char, i) => (

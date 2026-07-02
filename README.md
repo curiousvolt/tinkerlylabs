@@ -4,7 +4,7 @@ Welcome to Tinkerly Labs! This repository contains the AI waitlist landing page 
 
 ## Features
 - **Frontend:** React 19, Vite, Tailwind CSS v4, Motion (Framer Motion), Three.js
-- **Backend:** Netlify Functions (`/api/subscribe`) connecting to Google Sheets
+- **Backend:** Vercel Serverless Function (`/api/subscribe`) connecting to Google Sheets
 - **Design:** Modern, premium, clean aesthetic with 3D and scroll animations
 
 ## Run Locally
@@ -21,11 +21,10 @@ Welcome to Tinkerly Labs! This repository contains the AI waitlist landing page 
    npm run dev
    ```
 
-## Deploying to Netlify
+## Deploying to Vercel
 
-1. Connect this repository to Netlify.
-2. In Netlify Site Settings, configure these Environment Variables:
+1. Connect this repository to Vercel.
+2. In Vercel Project Settings, configure these Environment Variables:
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
    - `GOOGLE_PRIVATE_KEY` (ensure newlines are properly formatted)
    - `GOOGLE_SHEET_ID`
-   - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` (set to `true` to speed up builds)

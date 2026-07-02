@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, useScroll, useMotionValueEvent } from "motion/react";
 import { ReactLenis } from "lenis/react";
 import "lenis/dist/lenis.css";
 import CustomCursor from "./components/CustomCursor";
@@ -16,11 +16,13 @@ import JoinPopup from "./components/JoinPopup";
 export default function App() {
   const navRef = useRef<HTMLElement>(null);
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formStartedAt = useRef(Date.now());
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const lenisRef = useRef<any>(null);
 
   // Cleanup reset timer on unmount to prevent state update on unmounted component
   useEffect(() => () => { if (resetTimer.current) clearTimeout(resetTimer.current); }, []);
@@ -34,12 +36,21 @@ export default function App() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer' }),
+        body: JSON.stringify({
+          email,
+          source: 'footer',
+          website: '',
+          startedAt: formStartedAt.current,
+        }),
       });
       if (!res.ok) throw new Error('Failed');
       setSubmitted(true);
       if (resetTimer.current) clearTimeout(resetTimer.current);
-      resetTimer.current = setTimeout(() => { setSubmitted(false); setEmail(""); }, 4000);
+      resetTimer.current = setTimeout(() => {
+        setSubmitted(false);
+        setEmail("");
+        formStartedAt.current = Date.now();
+      }, 4000);
     } catch {
       setSubmitError('Something went wrong. Try again.');
     } finally {
@@ -47,38 +58,47 @@ export default function App() {
     }
   };
 
-  // Navbar hide/show — direct DOM manipulation, zero React re-renders on scroll
+  // Navbar hide/show synchronized with Framer Motion virtual scroll
   useEffect(() => {
-    let lastY = 0;
-    const TRANSITION = 'transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+    if (navRef.current) {
+      navRef.current.style.transition = 'transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+    }
+  }, []);
+
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
     const el = navRef.current;
     if (!el) return;
-    el.style.transition = TRANSITION;
 
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y > lastY && y > 80) {
-        el.style.transform = 'translateY(-120px)';
-      } else if (y < lastY - 5 || y < 20) {
-        el.style.transform = 'translateY(0)';
-      }
-      lastY = y;
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    if (latest > previous && latest > 80) {
+      el.style.transform = 'translateY(-120px)';
+    } else if (latest < previous - 2 || latest < 20) {
+      el.style.transform = 'translateY(0)';
+    }
+  });
 
   const handleScrollToSection = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
-    const target = document.getElementById(id);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (lenisRef.current?.lenis) {
+      lenisRef.current.lenis.scrollTo(`#${id}`);
+    } else {
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
-    <ReactLenis root>
+    <ReactLenis
+      ref={lenisRef}
+      root
+      options={{
+        lerp: 0.1,
+        wheelMultiplier: 1.1,
+        touchMultiplier: 1.4,
+        syncTouch: true,
+      }}
+    >
       <div
         id="app-root"
         className="min-h-screen bg-[#F9FAF7] text-[#131911] selection:bg-[#E39B4B] selection:text-[#080B07] font-sans relative overflow-x-clip bg-grain"
@@ -209,7 +229,7 @@ export default function App() {
                   style={{
                     backgroundImage: "linear-gradient(110deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)",
                     backgroundSize: "300% 100%",
-                    animation: "shine 4s linear infinite"
+                    animation: "text-shine 4s linear infinite"
                   }}
                   aria-hidden="true"
                 >
@@ -523,6 +543,14 @@ export default function App() {
               </motion.div>
             ) : (
               <form onSubmit={handleSignupSubmit} className="w-full flex bg-white hover:bg-white focus-within:bg-white border border-[#96A88F]/25 focus-within:border-[#E39B4B]/40 rounded-full p-1 transition-all duration-300 shadow-[0_4px_15px_rgba(150,168,143,0.04)]">
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                />
                 <input
                   type="email"
                   required
