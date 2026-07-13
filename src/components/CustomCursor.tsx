@@ -9,6 +9,8 @@ export default function CustomCursor() {
   
   // Use a ref to keep track of the currently hovered interactive element
   const hoverTargetRef = useRef<HTMLElement | null>(null);
+  // Cache the center coords so mousemove never triggers getBoundingClientRect
+  const hoverCenterRef = useRef<{ x: number; y: number } | null>(null);
 
   // Motion values for the core cursor position
   const cursorX = useMotionValue(-100);
@@ -37,12 +39,11 @@ export default function CustomCursor() {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
       
-      const target = hoverTargetRef.current;
-      if (target) {
-        // When hovered over a button, snap the trail ring to the center of the button
-        const rect = target.getBoundingClientRect();
-        targetX.set(rect.left + rect.width / 2);
-        targetY.set(rect.top + rect.height / 2);
+      const center = hoverCenterRef.current;
+      if (center) {
+        // Use cached center — no layout read on every mousemove
+        targetX.set(center.x);
+        targetY.set(center.y);
       } else {
         // Otherwise trail follows the mouse
         targetX.set(e.clientX);
@@ -67,6 +68,10 @@ export default function CustomCursor() {
         hoverTargetRef.current = interactiveEl;
         const rect = interactiveEl.getBoundingClientRect();
         const computedStyle = window.getComputedStyle(interactiveEl);
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        // Cache center so mousemove doesn't re-read layout
+        hoverCenterRef.current = { x: centerX, y: centerY };
         
         // Add 10px to width/height to create a 5px padding around the button
         setHoverData({
@@ -75,10 +80,11 @@ export default function CustomCursor() {
           radius: computedStyle.borderRadius || "50px",
         });
         
-        targetX.set(rect.left + rect.width / 2);
-        targetY.set(rect.top + rect.height / 2);
+        targetX.set(centerX);
+        targetY.set(centerY);
       } else {
         hoverTargetRef.current = null;
+        hoverCenterRef.current = null;
         setHoverData(null);
         // Instantly snap the target back to the current mouse position
         targetX.set(cursorX.get());

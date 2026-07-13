@@ -108,10 +108,13 @@ export function ThreeDBackground() {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
+      }
 
-        // Glow effect
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = this.shadowColor;
+      drawGlow(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = this.shadowColor.replace('1)', '0.25)');
+        ctx.fill();
       }
     }
 
@@ -173,10 +176,20 @@ export function ThreeDBackground() {
 
       drawLines();
 
+      // First pass: draw all solid particle fills (no shadow = fast)
+      ctx.shadowBlur = 0;
       particles.forEach((particle) => {
         particle.update();
         particle.draw(ctx);
       });
+
+      // Second pass: draw glow halos in a single batched shadow context
+      ctx.shadowBlur = 12;
+      particles.forEach((particle) => {
+        ctx.shadowColor = particle.shadowColor;
+        particle.drawGlow(ctx);
+      });
+      ctx.shadowBlur = 0;
 
       animationFrameId = requestAnimationFrame(animate);
     };

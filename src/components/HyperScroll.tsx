@@ -215,6 +215,9 @@ export default function HyperScroll() {
     handleScroll(); // Initial call
     window.addEventListener("scroll", handleScroll, { passive: true });
 
+    // Set perspective once — changing it every frame causes composite updates
+    viewport.style.perspective = `${1000}px`;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
@@ -233,6 +236,10 @@ export default function HyperScroll() {
 
       if (!isVisible) return; // Pause completely if out of view
 
+      // Skip frame if nothing changed (mouse and scroll are both idle)
+      if (!needsRender) return;
+      needsRender = false;
+
       const dt = Math.min(time - lastTime, 32) / 1000;
       lastTime = time;
 
@@ -244,16 +251,18 @@ export default function HyperScroll() {
       state.mouseX += (state.targetMouseX - state.mouseX) * 0.12;
       state.mouseY += (state.targetMouseY - state.mouseY) * 0.12;
 
+      // Keep rendering until motion fully settles
+      const stillMoving =
+        Math.abs(state.targetScroll - state.scroll) > 0.01 ||
+        Math.abs(state.targetMouseX - state.mouseX) > 0.001 ||
+        Math.abs(state.targetMouseY - state.mouseY) > 0.001;
+      if (stillMoving) needsRender = true;
+
       // Camera Tilt & Shake based on mouse position
       const tiltX = state.mouseY * 4;
       const tiltY = state.mouseX * 4;
 
       world.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-
-      // Dynamic warp perspective
-      const baseFov = 1000;
-      const fov = baseFov - Math.min(Math.abs(state.velocity) * 8, 550);
-      viewport.style.perspective = `${fov}px`;
 
       // Render camera coordinate deep inside space
       const cameraZ = state.scroll * CONFIG.camSpeed;
