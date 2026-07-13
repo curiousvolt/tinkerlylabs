@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { isLowEndDevice } from "../utils/devicePerf";
 
 export function ThreeDBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,6 +17,7 @@ export function ThreeDBackground() {
     let height = 0;
     let isVisible = true;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lowEnd = isLowEndDevice();
 
     const mouse = { x: -1000, y: -1000 };
 
@@ -120,9 +122,10 @@ export function ThreeDBackground() {
 
     const initParticles = () => {
       particles = [];
+      // Low-end: cap at 20 particles — no O(n²) line load
       const baseCount = Math.floor((width * height) / 18000);
-      const maxParticles = width < 768 ? 55 : 95;
-      const numParticles = prefersReducedMotion ? 24 : Math.min(baseCount, maxParticles);
+      const maxParticles = lowEnd ? 20 : (width < 768 ? 55 : 95);
+      const numParticles = prefersReducedMotion ? 14 : Math.min(baseCount, maxParticles);
       for (let i = 0; i < numParticles; i++) {
         particles.push(new Particle());
       }
@@ -174,7 +177,8 @@ export function ThreeDBackground() {
 
       ctx.clearRect(0, 0, width, height);
 
-      drawLines();
+      // Low-end: skip the O(n²) line loop — it's the single biggest CPU drain
+      if (!lowEnd) drawLines();
 
       // First pass: draw all solid particle fills (no shadow = fast)
       ctx.shadowBlur = 0;
@@ -183,13 +187,15 @@ export function ThreeDBackground() {
         particle.draw(ctx);
       });
 
-      // Second pass: draw glow halos in a single batched shadow context
-      ctx.shadowBlur = 12;
-      particles.forEach((particle) => {
-        ctx.shadowColor = particle.shadowColor;
-        particle.drawGlow(ctx);
-      });
-      ctx.shadowBlur = 0;
+      // Second pass: glow halos — skip entirely on low-end devices
+      if (!lowEnd) {
+        ctx.shadowBlur = 12;
+        particles.forEach((particle) => {
+          ctx.shadowColor = particle.shadowColor;
+          particle.drawGlow(ctx);
+        });
+        ctx.shadowBlur = 0;
+      }
 
       animationFrameId = requestAnimationFrame(animate);
     };

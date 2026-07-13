@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { isLowEndDevice } from "../utils/devicePerf";
 
 // Module-level constants for structural integrity and reuse in JSX
 const BACKGROUND_TEXTS = [
@@ -56,16 +57,17 @@ export default function HyperScroll() {
     const overlay = document.getElementById("completion-overlay");
     const textContent = document.getElementById("completion-text-content");
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lowEnd = isLowEndDevice();
 
     // Clear previous items
     world.innerHTML = "";
 
     // --- CONFIGURATION ---
     const CONFIG = {
-      itemCount: 12, // 4 cards and 4 background headlines, leaving 4 empty slots for holding
-      starCount: prefersReducedMotion ? 14 : 32,
+      itemCount: 12,
+      starCount: prefersReducedMotion ? 8 : lowEnd ? 8 : 32,
       zGap: 800,
-      loopSize: 0, // Calculated below
+      loopSize: 0,
       camSpeed: 2.5
     };
     CONFIG.loopSize = CONFIG.itemCount * CONFIG.zGap;
@@ -245,7 +247,8 @@ export default function HyperScroll() {
 
       // Smooth scroll interpolation
       const lastScroll = state.scroll;
-      const ease = prefersReducedMotion ? 0.5 : 0.28;
+      // Low-end: higher ease = fewer frames to settle = less CPU time spent
+      const ease = prefersReducedMotion ? 0.5 : lowEnd ? 0.45 : 0.28;
       state.scroll += (state.targetScroll - state.scroll) * ease;
       state.velocity = state.scroll - lastScroll;
       state.mouseX += (state.targetMouseX - state.mouseX) * 0.12;
@@ -346,9 +349,14 @@ export default function HyperScroll() {
           } else if (item.type === "text") {
             trans += ` rotateZ(${item.rot}deg)`;
           } else {
-            const t = time * 0.001;
-            const float = Math.sin(t + item.x) * 6;
-            trans += ` rotateZ(${item.rot}deg) rotateY(${float}deg)`;
+            // Low-end: skip the per-frame Math.sin float to save CPU
+            if (!lowEnd) {
+              const t = time * 0.001;
+              const float = Math.sin(t + item.x) * 6;
+              trans += ` rotateZ(${item.rot}deg) rotateY(${float}deg)`;
+            } else {
+              trans += ` rotateZ(${item.rot}deg)`;
+            }
           }
 
           item.el.style.transform = trans;

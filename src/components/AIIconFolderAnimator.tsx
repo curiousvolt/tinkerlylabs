@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
+import { isLowEndDevice } from "../utils/devicePerf";
 import {
   SiOpenai,
   SiGooglegemini,
@@ -342,6 +343,13 @@ export default function AIIconFolderAnimator() {
   const pulseFolderRef = useRef(false);
   const [pulseFolder, setPulseFolder] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const lowEnd = isLowEndDevice();
+
+  // On low-end devices only animate the 8 survivor icons
+  const SURVIVORS = ["chatgpt", "claude", "gemini", "huggingface", "notion", "cursor", "midjourney", "perplexity"];
+  const iconList = lowEnd
+    ? AI_ICONS_LIST.filter((i) => SURVIVORS.includes(i.id))
+    : AI_ICONS_LIST;
 
   // Monitor scroll within the tall container
   const { scrollYProgress } = useScroll({
@@ -349,12 +357,11 @@ export default function AIIconFolderAnimator() {
     offset: ["start start", "end end"],
   });
 
-  // Smooth springs to make scroll animation fluid and juicy
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 20,
-    restDelta: 0.001,
-  });
+  // Low-end: stiffer spring = settles faster = fewer interpolation frames
+  const smoothProgress = useSpring(scrollYProgress, lowEnd
+    ? { stiffness: 200, damping: 30, restDelta: 0.005 }
+    : { stiffness: 90, damping: 20, restDelta: 0.001 }
+  );
 
   // Track folding state to fire one-shot pulse on the folder
   useEffect(() => {
@@ -387,8 +394,8 @@ export default function AIIconFolderAnimator() {
         {/* Decorative backdrop mesh glow */}
         <div className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#3F513B]/8 rounded-full blur-[120px] pointer-events-none" />
 
-        {/* Scattered Floating AI Icons */}
-        {AI_ICONS_LIST.map((item) => (
+        {/* Scattered Floating AI Icons — low-end uses reduced set */}
+        {iconList.map((item) => (
           <AnimatedIcon
             key={item.id}
             item={item}
