@@ -422,6 +422,7 @@ export default function HyperScroll() {
             top: 50%;
             left: 50%;
             transform-style: preserve-3d;
+            will-change: transform;
           }
 
           #hyper-scroll-section .item {
@@ -433,6 +434,7 @@ export default function HyperScroll() {
             display: flex;
             align-items: center;
             justify-content: center;
+            will-change: transform, opacity;
           }
 
           /* --- CARDS & EDITORIAL CONTENT --- */

@@ -64,7 +64,7 @@ export default function WhoThisIsFor({ onJoinClick }: WhoThisIsForProps) {
     >
       {/* Parallax Abstract Geometric Lines Background */}
       <motion.div 
-        className="absolute inset-x-0 -top-[50%] -bottom-[50%] pointer-events-none z-0"
+        className="absolute inset-x-0 -top-[50%] -bottom-[50%] pointer-events-none z-0 transform-gpu"
         style={{ y: backgroundY }}
       >
         <svg
@@ -158,9 +158,9 @@ export default function WhoThisIsFor({ onJoinClick }: WhoThisIsForProps) {
 
         <div className="flex flex-col gap-6 w-full overflow-hidden select-none py-6 -my-6">
           {/* Row 1: Left to Right Scroll */}
-          <div className="relative w-full overflow-hidden flex py-4 -my-4">
+          <div className="relative w-full overflow-hidden flex py-4 -my-4 transform-gpu">
             <div
-              className="flex gap-4 whitespace-nowrap animate-marquee-third"
+              className="flex gap-4 whitespace-nowrap animate-marquee-third will-change-transform"
             >
               {row1Doubled.map((tag, idx) => (
                 <div
@@ -180,9 +180,9 @@ export default function WhoThisIsFor({ onJoinClick }: WhoThisIsForProps) {
           </div>
 
           {/* Row 2: Right to Left Scroll */}
-          <div className="relative w-full overflow-hidden flex py-4 -my-4">
+          <div className="relative w-full overflow-hidden flex py-4 -my-4 transform-gpu">
             <div
-              className="flex gap-4 whitespace-nowrap animate-marquee-third-reverse"
+              className="flex gap-4 whitespace-nowrap animate-marquee-third-reverse will-change-transform"
             >
               {row2Doubled.map((tag, idx) => (
                 <div
