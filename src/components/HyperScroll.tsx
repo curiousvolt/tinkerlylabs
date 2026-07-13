@@ -213,6 +213,7 @@ export default function HyperScroll() {
       needsRender = true;
     };
     handleScroll(); // Initial call
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -231,8 +232,6 @@ export default function HyperScroll() {
       animationFrameId = requestAnimationFrame(animate);
 
       if (!isVisible) return; // Pause completely if out of view
-
-      handleScroll(); // Read scroll synchronously with the animation frame
 
       const dt = Math.min(time - lastTime, 32) / 1000;
       lastTime = time;
@@ -351,6 +350,7 @@ export default function HyperScroll() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", updateLayoutCache);
+      window.removeEventListener("scroll", handleScroll);
       observer.disconnect();
       cancelAnimationFrame(animationFrameId);
     };
