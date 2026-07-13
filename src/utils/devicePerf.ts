@@ -1,7 +1,7 @@
 /**
  * Detects whether the current device is low-end based on:
- * - CPU core count (≤ 4 cores)
- * - Device memory (≤ 2 GB, Chrome only)
+ * - CPU core count (≤ 6 cores)
+ * - Device memory (≤ 4 GB, Chrome only)
  * - prefers-reduced-motion media query
  *
  * Used to scale back expensive animations on old / weak hardware.
@@ -15,11 +15,11 @@ export function isLowEndDevice(): boolean {
   if (prefersReducedMotion) return true;
 
   const cores = navigator.hardwareConcurrency ?? 8;
-  if (cores <= 4) return true;
+  if (cores <= 6) return true;
 
   // deviceMemory is a Chrome-only API (in GB)
   const mem = (navigator as any).deviceMemory as number | undefined;
-  if (mem !== undefined && mem <= 2) return true;
+  if (mem !== undefined && mem <= 4) return true;
 
   return false;
 }
