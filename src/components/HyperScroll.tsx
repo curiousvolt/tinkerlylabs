@@ -284,7 +284,13 @@ export default function HyperScroll() {
 
       // Sync the Completion glassmorphic overlay
       if (overlay) {
-        overlay.style.opacity = completionRatio.toString();
+        // Only write opacity while still animating — stop once fully opaque
+        if (completionRatio < 1) {
+          overlay.style.opacity = completionRatio.toString();
+        } else if (!overlayIsMounted) {
+          overlay.style.opacity = '1';
+          overlayIsMounted = true;
+        }
 
         const shouldAcceptPointer = completionRatio > 0.05;
         if (overlayAcceptsPointer !== shouldAcceptPointer) {
@@ -297,6 +303,7 @@ export default function HyperScroll() {
         textContent.style.transform = `translateY(${translateY}px)`;
       }
 
+      // Once overlay is fully visible, stop updating 3D items entirely
       if (completionRatio >= OVERLAY_RENDER_CUTOFF) {
         return;
       }
@@ -581,14 +588,14 @@ export default function HyperScroll() {
         <div className="vignette" />
         <div className="noise" />
 
-        {/* COMPLETION OVERLAY (Renders all cards/headlines at once, frosted, with centered climax text) */}
+        {/* COMPLETION OVERLAY — opacity is driven by JS, no CSS transition to avoid conflicts */}
         <div 
           id="completion-overlay"
-          className="absolute inset-0 z-[20] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-1000 bg-[#F4F6F2]"
-          style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+          className="absolute inset-0 z-[20] flex items-center justify-center opacity-0 pointer-events-none bg-[#F4F6F2] transform-gpu"
+          style={{ willChange: 'opacity' }}
         >
-          {/* BACKGROUND NEWSPAPER COLLAGE & FLOATING HEADLINES */}
-          <div className="absolute inset-0 overflow-hidden opacity-100 select-none pointer-events-none z-[1]">
+          {/* BACKGROUND NEWSPAPER COLLAGE — pre-promoted to GPU layer to prevent paint spike on reveal */}
+          <div className="absolute inset-0 overflow-hidden opacity-100 select-none pointer-events-none z-[1] transform-gpu" style={{ willChange: 'contents' }}>
             {Array.from({ length: COLLAGE_ITEM_COUNT }).map((_, idx) => {
               const art = ARTICLES[idx % ARTICLES.length];
               // Deterministic pseudo-random values to prevent re-render jitter
