@@ -20,8 +20,26 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
 }
 
-/* Smooth scrolling globally */
-html { scroll-behavior: smooth; }
+/* Lenis smooth scrolling styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
 
 /* Hide scrollbar across all browsers */
 ::-webkit-scrollbar { display: none; }
@@ -33,10 +51,49 @@ html { scroll-behavior: smooth; }
   color: #080B07;
 }
 
-/* Seamless shine sweep — used on hero text and Join Now buttons */
-@keyframes shine {
+/* Seamless GPU-accelerated shine sweep */
+@keyframes gpu-shine {
+  0%   { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+@keyframes text-shine {
   0%   { background-position: 100% center; }
   100% { background-position: 0%   center; }
+}
+
+.gpu-shine-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+.gpu-shine-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.25), transparent);
+  animation: gpu-shine 3.5s infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* GPU Marquee */
+@keyframes marquee-third {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.3333%); }
+}
+.animate-marquee-third {
+  animation: marquee-third 25s linear infinite;
+}
+
+@keyframes marquee-third-reverse {
+  0% { transform: translateX(-33.3333%); }
+  100% { transform: translateX(0); }
+}
+.animate-marquee-third-reverse {
+  animation: marquee-third-reverse 28s linear infinite;
 }
 
 .pill-glass {

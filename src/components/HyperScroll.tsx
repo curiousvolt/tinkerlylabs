@@ -39,6 +39,10 @@ const ARTICLES = [
   }
 ];
 
+const COLLAGE_ITEM_COUNT = 45;
+const COLLAGE_HEADLINE_COUNT = 25;
+const OVERLAY_RENDER_CUTOFF = 0.985;
+
 export default function HyperScroll() {
   const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
@@ -49,6 +53,9 @@ export default function HyperScroll() {
     const world = worldRef.current;
     const viewport = viewportRef.current;
     if (!container || !world || !viewport) return;
+    const overlay = document.getElementById("completion-overlay");
+    const textContent = document.getElementById("completion-text-content");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Clear previous items
     world.innerHTML = "";
@@ -56,7 +63,7 @@ export default function HyperScroll() {
     // --- CONFIGURATION ---
     const CONFIG = {
       itemCount: 12, // 4 cards and 4 background headlines, leaving 4 empty slots for holding
-      starCount: 120,
+      starCount: prefersReducedMotion ? 14 : 32,
       zGap: 800,
       loopSize: 0, // Calculated below
       camSpeed: 2.5
@@ -69,8 +76,14 @@ export default function HyperScroll() {
       targetScroll: 0,
       velocity: 0,
       mouseX: 0,
-      mouseY: 0
+      mouseY: 0,
+      targetMouseX: 0,
+      targetMouseY: 0
     };
+    let isVisible = false;
+    let needsRender = true;
+    let overlayIsMounted = false;
+    let overlayAcceptsPointer = false;
 
     interface Item {
       el: HTMLDivElement;
@@ -169,50 +182,87 @@ export default function HyperScroll() {
 
     // Mouse Move tracker
     const handleMouseMove = (e: MouseEvent) => {
-      state.mouseX = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-      state.mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      state.targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+      state.targetMouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      needsRender = true;
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    // Cache layout to prevent layout thrashing on scroll
+    let layoutCache = { top: 0, height: 0, windowHeight: 0 };
+    const updateLayoutCache = () => {
+      const rect = container.getBoundingClientRect();
+      layoutCache.top = rect.top + window.scrollY;
+      layoutCache.height = rect.height;
+      layoutCache.windowHeight = window.innerHeight;
+      needsRender = true;
+    };
+    window.addEventListener("resize", updateLayoutCache);
+    updateLayoutCache();
 
     // Scroll progress handler
     const handleScroll = () => {
-      const rect = container.getBoundingClientRect();
-      
-      const stickyHeight = rect.height - window.innerHeight;
+      const stickyHeight = layoutCache.height - layoutCache.windowHeight;
       if (stickyHeight <= 0) return;
 
-      const currentScroll = Math.max(0, -rect.top);
+      const currentScroll = Math.max(0, window.scrollY - layoutCache.top);
       const progress = Math.max(0, Math.min(1, currentScroll / stickyHeight));
 
       // Compute target scroll depth
       state.targetScroll = (progress * CONFIG.loopSize) / CONFIG.camSpeed;
+      needsRender = true;
     };
-    window.addEventListener("scroll", handleScroll);
     handleScroll(); // Initial call
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Set perspective once — changing it every frame causes composite updates
+    viewport.style.perspective = `${1000}px`;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        needsRender = true;
+      },
+      { rootMargin: "240px" },
+    );
+    observer.observe(container);
 
     // --- RAF ANIMATION LOOP ---
     let lastTime = 0;
     let animationFrameId: number;
 
-    function raf(time: number) {
-      const delta = time - lastTime;
+    const animate = (time: number) => {
+      animationFrameId = requestAnimationFrame(animate);
+
+      if (!isVisible) return; // Pause completely if out of view
+
+      // Skip frame if nothing changed (mouse and scroll are both idle)
+      if (!needsRender) return;
+      needsRender = false;
+
+      const dt = Math.min(time - lastTime, 32) / 1000;
       lastTime = time;
 
       // Smooth scroll interpolation
       const lastScroll = state.scroll;
-      state.scroll += (state.targetScroll - state.scroll) * 0.085; // highly responsive easing
+      const ease = prefersReducedMotion ? 0.5 : 0.28;
+      state.scroll += (state.targetScroll - state.scroll) * ease;
       state.velocity = state.scroll - lastScroll;
+      state.mouseX += (state.targetMouseX - state.mouseX) * 0.12;
+      state.mouseY += (state.targetMouseY - state.mouseY) * 0.12;
 
-      // Camera Tilt & Shake based on mouse position and inertia
-      const tiltX = state.mouseY * 4 - state.velocity * 0.35;
+      // Keep rendering until motion fully settles
+      const stillMoving =
+        Math.abs(state.targetScroll - state.scroll) > 0.01 ||
+        Math.abs(state.targetMouseX - state.mouseX) > 0.001 ||
+        Math.abs(state.targetMouseY - state.mouseY) > 0.001;
+      if (stillMoving) needsRender = true;
+
+      // Camera Tilt & Shake based on mouse position
+      const tiltX = state.mouseY * 4;
       const tiltY = state.mouseX * 4;
 
       world.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-
-      // Dynamic warp perspective
-      const baseFov = 1000;
-      const fov = baseFov - Math.min(Math.abs(state.velocity) * 8, 550);
-      viewport.style.perspective = `${fov}px`;
 
       // Render camera coordinate deep inside space
       const cameraZ = state.scroll * CONFIG.camSpeed;
@@ -233,19 +283,29 @@ export default function HyperScroll() {
       }
 
       // Sync the Completion glassmorphic overlay
-      const overlay = document.getElementById("completion-overlay");
-      const textContent = document.getElementById("completion-text-content");
       if (overlay) {
-        overlay.style.opacity = completionRatio.toString();
-        if (completionRatio > 0.05) {
-          overlay.style.pointerEvents = "auto";
-        } else {
-          overlay.style.pointerEvents = "none";
+        // Only write opacity while still animating — stop once fully opaque
+        if (completionRatio < 1) {
+          overlay.style.opacity = completionRatio.toString();
+        } else if (!overlayIsMounted) {
+          overlay.style.opacity = '1';
+          overlayIsMounted = true;
+        }
+
+        const shouldAcceptPointer = completionRatio > 0.05;
+        if (overlayAcceptsPointer !== shouldAcceptPointer) {
+          overlayAcceptsPointer = shouldAcceptPointer;
+          overlay.style.pointerEvents = shouldAcceptPointer ? "auto" : "none";
         }
       }
       if (textContent) {
         const translateY = 40 * (1 - completionRatio);
         textContent.style.transform = `translateY(${translateY}px)`;
+      }
+
+      // Once overlay is fully visible, stop updating 3D items entirely
+      if (completionRatio >= OVERLAY_RENDER_CUTOFF) {
+        return;
       }
 
       items.forEach((item) => {
@@ -285,12 +345,6 @@ export default function HyperScroll() {
             trans += ` scale3d(1, 1, ${stretch})`;
           } else if (item.type === "text") {
             trans += ` rotateZ(${item.rot}deg)`;
-            if (Math.abs(state.velocity) > 0.8) {
-              const offset = state.velocity * 1.5;
-              item.el.style.textShadow = `${offset}px 0 rgba(19,25,17,0.25), ${-offset}px 0 rgba(150,168,143,0.5)`;
-            } else {
-              item.el.style.textShadow = "none";
-            }
           } else {
             const t = time * 0.001;
             const float = Math.sin(t + item.x) * 6;
@@ -300,14 +354,14 @@ export default function HyperScroll() {
           item.el.style.transform = trans;
         }
       });
-
-      animationFrameId = requestAnimationFrame(raf);
-    }
-    animationFrameId = requestAnimationFrame(raf);
+    };
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", updateLayoutCache);
       window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -318,12 +372,12 @@ export default function HyperScroll() {
       ref={containerRef}
       className="relative w-full h-[410vh] bg-[#F4F6F2] select-none"
     >
-      {/* STICKY CONTAINER WRAPPER */}
-      <div className="sticky top-0 w-full h-screen overflow-hidden bg-[#F4F6F2]">
+      {/* STICKY CONTAINER WRAPPER - Isolated layer to prevent sticky scroll jitter */}
+      <div className="sticky top-0 w-full h-screen overflow-hidden bg-[#F4F6F2] transform-gpu">
         
         {/* INTEGRATED HEADER - Cards will fly past this */}
         <h2 
-          className="absolute top-6 md:top-10 left-1/2 -translate-x-1/2 z-[0] text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-clash font-extrabold tracking-tight uppercase text-center leading-normal pb-2 text-transparent bg-clip-text animate-text-shine select-none pointer-events-none whitespace-nowrap"
+          className="absolute top-6 md:top-10 left-1/2 -translate-x-1/2 z-[0] text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-clash font-extrabold tracking-tight uppercase text-center leading-normal pb-2 text-transparent bg-clip-text select-none pointer-events-none whitespace-nowrap"
           style={{
             backgroundImage: "linear-gradient(120deg, #131911 35%, #96A88F 50%, #131911 65%)",
             backgroundSize: "200% auto",
@@ -344,13 +398,7 @@ export default function HyperScroll() {
             --font-code: 'JetBrains Mono', monospace;
           }
 
-          @keyframes textShine {
-            0% { background-position: 200% center; }
-            100% { background-position: -200% center; }
-          }
-          .animate-text-shine {
-            animation: textShine 5s linear infinite;
-          }
+
 
           /* --- POST PROCESSING OVERLAYS --- */
           #hyper-scroll-section .vignette {
@@ -396,6 +444,7 @@ export default function HyperScroll() {
             display: flex;
             align-items: center;
             justify-content: center;
+            will-change: transform, opacity;
           }
 
           /* --- CARDS & EDITORIAL CONTENT --- */
@@ -539,15 +588,15 @@ export default function HyperScroll() {
         <div className="vignette" />
         <div className="noise" />
 
-        {/* COMPLETION OVERLAY (Renders all cards/headlines at once, frosted, with centered climax text) */}
+        {/* COMPLETION OVERLAY — opacity is driven by JS, no CSS transition to avoid conflicts */}
         <div 
           id="completion-overlay"
-          className="absolute inset-0 z-[20] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-1000 bg-[#F4F6F2]"
-          style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
+          className="absolute inset-0 z-[20] flex items-center justify-center opacity-0 pointer-events-none bg-[#F4F6F2] transform-gpu"
+          style={{ willChange: 'opacity' }}
         >
-          {/* BACKGROUND NEWSPAPER COLLAGE & FLOATING HEADLINES */}
-          <div className="absolute inset-0 overflow-hidden opacity-100 select-none pointer-events-none z-[1]">
-            {Array.from({ length: 45 }).map((_, idx) => {
+          {/* BACKGROUND NEWSPAPER COLLAGE — pre-promoted to GPU layer to prevent paint spike on reveal */}
+          <div className="absolute inset-0 overflow-hidden opacity-100 select-none pointer-events-none z-[1] transform-gpu" style={{ willChange: 'contents' }}>
+            {Array.from({ length: COLLAGE_ITEM_COUNT }).map((_, idx) => {
               const art = ARTICLES[idx % ARTICLES.length];
               // Deterministic pseudo-random values to prevent re-render jitter
               const rand1 = (Math.sin(idx * 1337) + 1) / 2;
@@ -584,7 +633,7 @@ export default function HyperScroll() {
             
             {/* FLOATING OUTLINE HEADLINES IN BACKGROUND */}
             <div className="absolute inset-0 opacity-20 pointer-events-none">
-              {Array.from({ length: 25 }).map((_, idx) => {
+              {Array.from({ length: COLLAGE_HEADLINE_COUNT }).map((_, idx) => {
                 const txt = BACKGROUND_TEXTS[idx % BACKGROUND_TEXTS.length];
                 const rand1 = (Math.cos(idx * 333) + 1) / 2;
                 const rand2 = (Math.sin(idx * 555) + 1) / 2;

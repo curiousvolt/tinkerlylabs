@@ -278,12 +278,12 @@ function AnimatedIcon({
   const x = useTransform(
     smoothProgress,
     [0, 0.45],
-    [`${item.startX}%`, `${targetX}%`],
+    [`calc(${item.startX}vw - 50%)`, `calc(${targetX}vw - 50%)`],
   );
   const y = useTransform(
     smoothProgress,
     [0, 0.45],
-    [`${item.startY}%`, `${targetY}%`],
+    [`calc(${item.startY}vh - 50%)`, `calc(${targetY}vh - 50%)`],
   );
   const isSurvivor = [
     "chatgpt",
@@ -311,13 +311,13 @@ function AnimatedIcon({
     <motion.div
       id={`floating-ai-icon-${item.id}`}
       style={{
-        left: x,
-        top: y,
+        left: 0,
+        top: 0,
+        x,
+        y,
         scale,
         opacity,
         rotate: item.rot,
-        x: "-50%",
-        y: "-50%",
       }}
       initial={{ opacity: 0, scale: 0.4 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -339,6 +339,7 @@ function AnimatedIcon({
 
 export default function AIIconFolderAnimator() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const pulseFolderRef = useRef(false);
   const [pulseFolder, setPulseFolder] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -359,10 +360,10 @@ export default function AIIconFolderAnimator() {
   useEffect(() => {
     return smoothProgress.on("change", (latest) => {
       // Trigger folder pulse when icons have finished converging
-      if (latest >= 0.45) {
-        setPulseFolder(true);
-      } else {
-        setPulseFolder(false);
+      const shouldPulse = latest >= 0.45;
+      if (pulseFolderRef.current !== shouldPulse) {
+        pulseFolderRef.current = shouldPulse;
+        setPulseFolder(shouldPulse);
       }
     });
   }, [smoothProgress]);

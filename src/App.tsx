@@ -1,28 +1,28 @@
-import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
-import { motion } from "motion/react";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, useScroll, useMotionValueEvent } from "motion/react";
+import { ReactLenis } from "lenis/react";
+import "lenis/dist/lenis.css";
 import CustomCursor from "./components/CustomCursor";
 
-// Lazy-load all heavy sections — they load as the user scrolls
 import AIIconFolderAnimator from "./components/AIIconFolderAnimator";
-const WhatYouWillLearn     = lazy(() => import("./components/WhatYouWillLearn"));
-const WhoThisIsFor         = lazy(() => import("./components/WhoThisIsFor"));
-const ThreeDBackground     = lazy(() => import("./components/ThreeDBackground").then(m => ({ default: m.ThreeDBackground })));
-const HyperScroll          = lazy(() => import("./components/HyperScroll"));
-const FAQ                  = lazy(() => import("./components/FAQ"));
-const CTASection           = lazy(() => import("./components/CTASection"));
-const JoinPopup            = lazy(() => import("./components/JoinPopup"));
-
-// Minimal section skeleton shown while lazy chunks download
-const SectionFallback = () => <div className="w-full h-32" />;
+import WhatYouWillLearn from "./components/WhatYouWillLearn";
+import WhoThisIsFor from "./components/WhoThisIsFor";
+import { ThreeDBackground } from "./components/ThreeDBackground";
+import HyperScroll from "./components/HyperScroll";
+import FAQ from "./components/FAQ";
+import CTASection from "./components/CTASection";
+import JoinPopup from "./components/JoinPopup";
 
 export default function App() {
   const navRef = useRef<HTMLElement>(null);
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formStartedAt = useRef(Date.now());
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const lenisRef = useRef<any>(null);
 
   // Cleanup reset timer on unmount to prevent state update on unmounted component
   useEffect(() => () => { if (resetTimer.current) clearTimeout(resetTimer.current); }, []);
@@ -36,12 +36,21 @@ export default function App() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer' }),
+        body: JSON.stringify({
+          email,
+          source: 'footer',
+          website: '',
+          startedAt: formStartedAt.current,
+        }),
       });
       if (!res.ok) throw new Error('Failed');
       setSubmitted(true);
       if (resetTimer.current) clearTimeout(resetTimer.current);
-      resetTimer.current = setTimeout(() => { setSubmitted(false); setEmail(""); }, 4000);
+      resetTimer.current = setTimeout(() => {
+        setSubmitted(false);
+        setEmail("");
+        formStartedAt.current = Date.now();
+      }, 4000);
     } catch {
       setSubmitError('Something went wrong. Try again.');
     } finally {
@@ -49,41 +58,51 @@ export default function App() {
     }
   };
 
-  // Navbar hide/show — direct DOM manipulation, zero React re-renders on scroll
+  // Navbar hide/show synchronized with Framer Motion virtual scroll
   useEffect(() => {
-    let lastY = 0;
-    const TRANSITION = 'transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+    if (navRef.current) {
+      navRef.current.style.transition = 'transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+    }
+  }, []);
+
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
     const el = navRef.current;
     if (!el) return;
-    el.style.transition = TRANSITION;
 
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y > lastY && y > 80) {
-        el.style.transform = 'translateY(-120px)';
-      } else if (y < lastY - 5 || y < 20) {
-        el.style.transform = 'translateY(0)';
-      }
-      lastY = y;
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    if (latest > previous && latest > 80) {
+      el.style.transform = 'translateY(-120px)';
+    } else if (latest < previous - 2 || latest < 20) {
+      el.style.transform = 'translateY(0)';
+    }
+  });
 
   const handleScrollToSection = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
-    const target = document.getElementById(id);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (lenisRef.current?.lenis) {
+      lenisRef.current.lenis.scrollTo(`#${id}`);
+    } else {
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
-    <div
-      id="app-root"
-      className="min-h-screen bg-[#F9FAF7] text-[#131911] selection:bg-[#E39B4B] selection:text-[#080B07] font-sans relative overflow-x-clip bg-grain"
+    <ReactLenis
+      ref={lenisRef}
+      root
+      options={{
+        lerp: 0.1,
+        wheelMultiplier: 1.1,
+        touchMultiplier: 1.4,
+        syncTouch: true,
+      }}
     >
+      <div
+        id="app-root"
+        className="min-h-screen bg-[#F9FAF7] text-[#131911] selection:bg-[#E39B4B] selection:text-[#080B07] font-sans relative overflow-x-clip bg-grain"
+      >
       {/* 1. Custom Trailing Liquid Glowing Cursor */}
       <CustomCursor />
 
@@ -171,9 +190,7 @@ export default function App() {
         {/* Bottom edge intensity */}
         <div className="absolute -bottom-[15%] left-[10%] right-[10%] h-[35%] bg-[#c6b4f7] rounded-[100%] blur-[100px] opacity-50 z-0 pointer-events-none" />
         
-        <Suspense fallback={<div className="absolute inset-0" />}>
-          <ThreeDBackground />
-        </Suspense>
+        <ThreeDBackground />
 
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col items-center justify-center w-full">
           {/* Presenter Pill Badge */}
@@ -212,7 +229,7 @@ export default function App() {
                   style={{
                     backgroundImage: "linear-gradient(110deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%)",
                     backgroundSize: "300% 100%",
-                    animation: "shine 4s linear infinite"
+                    animation: "text-shine 4s linear infinite"
                   }}
                   aria-hidden="true"
                 >
@@ -315,35 +332,23 @@ export default function App() {
 
       {/* Interactive scroll folder compilation animation */}
       <section className="relative w-full z-10">
-        <Suspense fallback={<SectionFallback />}>
-          <AIIconFolderAnimator />
-        </Suspense>
+        <AIIconFolderAnimator />
       </section>
 
       {/* CORE SYLLABUS GRID: What you'll learn */}
-      <Suspense fallback={<SectionFallback />}>
-        <WhatYouWillLearn />
-      </Suspense>
+      <WhatYouWillLearn />
 
       {/* TARGET CLIENT SEGMENTS & CONCENTRIC AUTHORITY: Who this is for */}
-      <Suspense fallback={<SectionFallback />}>
-        <WhoThisIsFor onJoinClick={() => setIsJoinModalOpen(true)} />
-      </Suspense>
+      <WhoThisIsFor onJoinClick={() => setIsJoinModalOpen(true)} />
 
       {/* 3D HYPER SCROLL VIEWPORT */}
-      <Suspense fallback={<SectionFallback />}>
-        <HyperScroll />
-      </Suspense>
+      <HyperScroll />
 
       {/* GRADIENT CALL TO ACTION SECTION */}
-      <Suspense fallback={<SectionFallback />}>
-        <CTASection onJoinClick={() => setIsJoinModalOpen(true)} />
-      </Suspense>
+      <CTASection onJoinClick={() => setIsJoinModalOpen(true)} />
 
       {/* FREQUENTLY ASKED QUESTIONS SECTION */}
-      <Suspense fallback={<SectionFallback />}>
-        <FAQ />
-      </Suspense>
+      <FAQ />
 
       </main>
 
@@ -539,6 +544,14 @@ export default function App() {
             ) : (
               <form onSubmit={handleSignupSubmit} className="w-full flex bg-white hover:bg-white focus-within:bg-white border border-[#96A88F]/25 focus-within:border-[#E39B4B]/40 rounded-full p-1 transition-all duration-300 shadow-[0_4px_15px_rgba(150,168,143,0.04)]">
                 <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                />
+                <input
                   type="email"
                   required
                   value={email}
@@ -578,9 +591,8 @@ export default function App() {
       </footer>
 
       {/* POPUP WAITLIST FORM */}
-      <Suspense fallback={null}>
-        <JoinPopup isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
-      </Suspense>
-    </div>
+      <JoinPopup isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
+      </div>
+    </ReactLenis>
   );
 }

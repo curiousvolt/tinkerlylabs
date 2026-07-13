@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Plus, HelpCircle } from "lucide-react";
 
 interface FAQItem {
@@ -48,7 +48,7 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="py-24 relative overflow-hidden bg-[#F9FAF7] border-t border-[#96A88F]/15"
+      className="py-24 relative overflow-hidden bg-[#F9FAF7]"
     >
       {/* Background soft glowing radial lights */}
       <div className="absolute top-[20%] left-[10%] w-[450px] h-[450px] bg-[#96A88F]/10 rounded-full blur-[120px] pointer-events-none z-0" />
@@ -56,46 +56,34 @@ export default function FAQ() {
 
       <div className="max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center">
         {/* Sub-Badge */}
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <span
           className="text-[10px] font-mono tracking-[0.25em] text-[#E39B4B] uppercase bg-[#E39B4B]/10 px-3.5 py-1 rounded-full border border-[#E39B4B]/20 mb-6"
         >
           CURRICULUM ASSISTANCE
-        </motion.span>
+        </span>
 
         {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
+        <h2
           className="text-3xl sm:text-4xl md:text-5xl font-display font-extrabold tracking-tight text-[#131911] text-center leading-tight mb-14"
         >
           Frequently Asked{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E39B4B] to-[#D07C5B]">
             Questions
           </span>
-        </motion.h2>
+        </h2>
 
         {/* Accordion List — uses CSS grid rows for zero-jitter expand/collapse */}
         <div className="w-full max-w-3xl flex flex-col gap-4">
           {FAQ_DATA.map((item, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <motion.div
+              <div
                 key={idx}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className={`group border rounded-2xl bg-white grid overflow-hidden transition-[grid-template-rows,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+                className={`group border rounded-2xl bg-white overflow-hidden transition-[border-color,box-shadow] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
                   isOpen
                     ? "border-[#E39B4B]/30 shadow-[0_4px_30px_rgba(150,168,143,0.08)]"
                     : "border-[#96A88F]/15 hover:border-[#96A88F]/30"
                 }`}
-                style={{ gridTemplateColumns: "1fr", gridTemplateRows: isOpen ? "0.1fr 1fr" : "0.1fr 0fr" }}
               >
                 {/* Trigger */}
                 <button
@@ -127,18 +115,24 @@ export default function FAQ() {
                 </button>
 
                 {/* Content */}
-                <div className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]">
-                  <div
-                    className={`px-6 pb-6 pt-0 ml-8 border-t border-zinc-100 transition-opacity duration-300 ${
-                      isOpen ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
-                      {item.answer}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-6 pt-0 ml-8 border-t border-zinc-100">
+                        <p className="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl pt-4">
+                          {item.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             );
           })}
         </div>
