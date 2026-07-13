@@ -345,12 +345,6 @@ export default function AIIconFolderAnimator() {
   const [isHovered, setIsHovered] = useState(false);
   const lowEnd = isLowEndDevice();
 
-  // On low-end devices only animate the 8 survivor icons
-  const SURVIVORS = ["chatgpt", "claude", "gemini", "huggingface", "notion", "cursor", "midjourney", "perplexity"];
-  const iconList = lowEnd
-    ? AI_ICONS_LIST.filter((i) => SURVIVORS.includes(i.id))
-    : AI_ICONS_LIST;
-
   // Monitor scroll within the tall container
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -394,8 +388,8 @@ export default function AIIconFolderAnimator() {
         {/* Decorative backdrop mesh glow */}
         <div className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#3F513B]/8 rounded-full blur-[120px] pointer-events-none" />
 
-        {/* Scattered Floating AI Icons — low-end uses reduced set */}
-        {iconList.map((item) => (
+        {/* Scattered Floating AI Icons */}
+        {AI_ICONS_LIST.map((item) => (
           <AnimatedIcon
             key={item.id}
             item={item}
