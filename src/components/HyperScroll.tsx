@@ -329,12 +329,6 @@ export default function HyperScroll() {
             trans += ` scale3d(1, 1, ${stretch})`;
           } else if (item.type === "text") {
             trans += ` rotateZ(${item.rot}deg)`;
-            if (Math.abs(state.velocity) > 0.8) {
-              const offset = state.velocity * 1.5;
-              item.el.style.textShadow = `${offset}px 0 rgba(19,25,17,0.25), ${-offset}px 0 rgba(150,168,143,0.5)`;
-            } else {
-              item.el.style.textShadow = "none";
-            }
           } else {
             const t = time * 0.001;
             const float = Math.sin(t + item.x) * 6;
